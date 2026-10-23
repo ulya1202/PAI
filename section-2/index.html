@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Random Variables: the Map 🚀</title>
+<style>
+:root{--line:#9fb3c8;--blue:#2e6da4;--green:#1e9e6a;--purple:#8e44ad;--orange:#d9741c;--red:#c0392b;--teal:#138d90;--gold:#b8860b}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eef3fa,#f9fbfe);color:#22313f}
+header{text-align:center;padding:22px 16px 6px}
+header h1{margin:0 0 6px;font-size:28px}
+header p{margin:0;color:#556}
+.hint{display:inline-block;background:#fff;border:1px solid #d5e0ee;border-radius:20px;padding:6px 14px;margin-top:10px;font-size:14px}
+/* ---------- tree ---------- */
+.tree{overflow-x:auto;padding:10px 10px 40px}
+.tree > .br{padding-top:0;width:max-content;min-width:100%;margin:0 auto}
+.br{display:flex;justify-content:safe center;padding:26px 0 0;margin:0;position:relative;list-style:none}
+.nd{list-style:none;position:relative;padding:26px 8px 0;display:flex;flex-direction:column;align-items:center}
+.nd::before,.nd::after{content:'';position:absolute;top:0;right:50%;width:50%;height:26px;border-top:2px solid var(--line)}
+.nd::after{right:auto;left:50%;border-left:2px solid var(--line)}
+.nd:only-child::before,.nd:only-child::after{display:none}
+.nd:only-child{padding-top:0}
+.nd:first-child::before,.nd:last-child::after{border:0 none}
+.nd:last-child::before{border-right:2px solid var(--line);border-radius:0 8px 0 0}
+.nd:first-child::after{border-radius:8px 0 0 0}
+.br .br::before{content:'';position:absolute;top:0;left:50%;height:26px;border-left:2px solid var(--line)}
+.nd:not(.open) > .br{display:none}
+.node{--c:var(--blue);background:#fff;border:2px solid var(--c);border-radius:14px;box-shadow:0 3px 12px rgba(30,60,100,.08);min-width:170px;max-width:250px;transition:width .25s}
+.nhead{cursor:pointer;padding:10px 14px;font-weight:700;text-align:center;color:var(--c);user-select:none;font-size:16px}
+.nhead:hover{background:rgba(0,0,0,.025);border-radius:12px}
+.teaser{display:block;font-weight:400;font-size:12px;color:#7a8794;margin-top:2px}
+.arr{display:inline-block;transition:transform .2s;margin-right:6px;font-size:13px}
+.nd.open > .node .teaser{display:none}
+.nd.open > .node .arr{transform:rotate(90deg)}
+.nd.open > .node{width:390px;max-width:none}
+.nd.open > .node.wide{width:900px}
+.nbody{display:none;padding:2px 14px 14px;gap:16px;text-align:left;font-size:14.5px;line-height:1.5}
+.nd.open > .node > .nbody{display:grid}
+.nd.open > .node.wide > .nbody{grid-template-columns:1.05fr 1fr}
+.nbody p{margin:6px 0}
+.nbody ul{margin:4px 0;padding-left:20px}
+.nanim{background:#f5f8fc;border-radius:12px;padding:10px 12px;border:1px dashed #c4d3e6;align-self:start}
+.nanim h5{margin:0 0 6px;font-size:13px;color:#667;text-transform:uppercase;letter-spacing:.5px}
+.ex{background:#fff8e6;border-left:4px solid #f0b429;padding:6px 10px;border-radius:6px;margin:8px 0}
+.key{background:#eaf6ef;border-left:4px solid var(--green);padding:6px 10px;border-radius:6px;margin:8px 0}
+.formula{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:18px;background:#eef4fb;border-radius:8px;padding:8px 10px;text-align:center;margin:8px 0}
+.stop{background:#fdecea;border-radius:6px;padding:6px 10px;color:#9b2c2c}
+.pulse{animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,109,164,.45)}50%{box-shadow:0 0 0 10px rgba(46,109,164,0)}}
+.flash{animation:flash 1.5s}
+@keyframes flash{0%,60%{box-shadow:0 0 0 6px #f5c542}100%{box-shadow:0 3px 12px rgba(0,0,0,.08)}}
+button{font:inherit;font-size:13px;border:1px solid #b8c7da;background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;margin:2px}
+button:hover{background:#eaf1fa}
+button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.jump{background:#fff3e0;border-color:#f0b27a;color:#a04e00;font-weight:600}
+input[type=range]{width:150px;vertical-align:middle}
+.row{margin:4px 0;font-size:13.5px}
+table.cmp,table.mini{border-collapse:collapse;font-size:13px;margin:6px 0;width:100%}
+table.cmp td,table.cmp th,table.mini td,table.mini th{border:1px solid #d6dfea;padding:4px 6px;text-align:center}
+table.cmp th,table.mini th{background:#eef4fb}
+.scroll{overflow-x:auto}
+/* tooltip terms */
+.t{border-bottom:2px dotted var(--orange);cursor:help;color:inherit}
+#tip{position:fixed;display:none;max-width:290px;background:#1f2d3d;color:#fff;padding:9px 12px;border-radius:10px;font-size:13.5px;line-height:1.45;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
+#tip b{color:#ffd479}
+/* code boxes */
+details.code{margin:8px 0;border:1px solid #cfd9e6;border-radius:8px;background:#fff}
+details.code summary{cursor:pointer;padding:6px 10px;font-weight:600;color:#2d4a6b;font-size:13.5px}
+details.code pre{margin:0;background:#1e2733;color:#e6edf3;padding:10px 12px;border-radius:0 0 8px 8px;font-size:12.5px;overflow-x:auto;line-height:1.45}
+details.opt{margin:10px 0;border:2px dashed #b38bd6;border-radius:10px;background:#faf5ff}
+details.opt summary{cursor:pointer;padding:8px 10px;font-weight:700;color:var(--purple)}
+details.opt > div{padding:0 12px 10px}
+/* bars */
+.bars{display:flex;align-items:flex-end;height:130px;border-bottom:2px solid #8a9bb0}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;padding:0 2px;min-width:0}
+.bwrap{position:relative;flex:1;width:100%;display:flex;align-items:flex-end}
+.bar{width:100%;background:#4a8ad6;border-radius:4px 4px 0 0;transition:height .3s}
+.bar.hl{background:#f39c12}
+.bout{position:absolute;bottom:0;left:0;right:0;border:2px dashed #e74c3c;border-bottom:none;pointer-events:none}
+.bl{font-size:11px;color:#556;white-space:nowrap;margin-top:2px;position:absolute;bottom:-17px}
+.bcol{position:relative}
+.bv{font-size:10px;color:#667;height:13px}
+.chartwrap{padding-bottom:20px;margin:6px 0}
+.legend{font-size:12px;color:#667}
+.legend .dash{display:inline-block;width:16px;height:9px;border:2px dashed #e74c3c;border-bottom:none;vertical-align:middle}
+/* coins */
+.coins{display:flex;gap:16px;justify-content:center;margin:6px 0}
+.coin{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe9a8,#d4a72c);border:3px solid #b8901f;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#6b4e00}
+.coin.H{background:radial-gradient(circle at 35% 35%,#ffe9a8,#d4a72c)}
+.coin.T{background:radial-gradient(circle at 35% 35%,#e6eef7,#9fb1c4);border-color:#7d8fa3;color:#34495e}
+.spin{animation:spin .6s ease-out}
+@keyframes spin{0%{transform:rotateY(0) translateY(0)}50%{transform:rotateY(900deg) translateY(-25px)}100%{transform:rotateY(1800deg) translateY(0)}}
+.omega{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.om,.omx{border:1px solid #c9d6e6;border-radius:6px;padding:2px 7px;font-size:12.5px;background:#fff;transition:.2s}
+.om.on,.omx.on{background:#f39c12;color:#fff;border-color:#f39c12;transform:scale(1.08)}
+.center{text-align:center}
+/* die & number line */
+.die{font-size:62px;line-height:1;display:inline-block}
+.nl{display:flex;justify-content:center;gap:4px;align-items:center;margin:6px 0;font-size:13px}
+.nl span{width:28px;height:28px;border-radius:50%;border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--green);background:#fff}
+.nl span.on{background:var(--green);color:#fff}
+.nl i{color:#bbb;font-style:normal}
+/* bernoulli */
+.bigicon{font-size:52px;display:inline-block}
+.pop{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+/* binomial questions */
+.qs{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.q{width:36px;height:36px;border-radius:8px;border:2px solid #b8c7da;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#778}
+.q.yes{background:#27ae60;color:#fff;border-color:#27ae60;animation:pop .3s}
+.q.no{background:#e9eef4;color:#95a5a6;animation:pop .3s}
+/* poisson timeline */
+.tl{position:relative;height:36px;background:#fff;border:2px solid #c4d3e6;border-radius:8px;margin:6px 0 2px;overflow:hidden;background-image:repeating-linear-gradient(90deg,#eef3f9 0,#eef3f9 1px,transparent 1px,transparent 8px)}
+.edot{position:absolute;top:7px;width:9px;height:18px;margin-left:-4px;background:var(--orange);border-radius:3px;opacity:0;animation:appear .25s forwards}
+@keyframes appear{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+.cursor{position:absolute;top:0;bottom:0;width:2px;background:var(--red);animation:sweep 1.5s linear forwards}
+@keyframes sweep{from{left:0}to{left:100%}}
+.tlab{display:flex;justify-content:space-between;font-size:11px;color:#778}
+/* machine */
+.mach{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;min-height:90px}
+.mIn,.mOut{width:70px;height:70px;border-radius:12px;background:#fff;border:2px solid #c4d3e6;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;transition:transform .5s,opacity .5s}
+.mIn.go{transform:translateX(70px) scale(.4);opacity:0}
+.mOut{opacity:.35}
+.mOut.show{opacity:1;animation:pop .4s;border-color:var(--green)}
+.machine{width:150px;min-height:86px;border-radius:14px;background:linear-gradient(160deg,#5b7da8,#34507a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;text-align:center;font-size:13px}
+.gear{font-size:26px;display:inline-block}
+.machine.busy .gear{animation:rot .9s linear}
+.machine.busy{animation:shake .15s 6}
+@keyframes rot{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+.arrowtxt{font-size:22px;color:#8a9bb0}
+/* balance */
+.balance{position:relative;padding-bottom:44px}
+.fulcrum{position:absolute;bottom:2px;transform:translateX(-50%);color:var(--red);font-size:22px;text-align:center;line-height:1;transition:left .3s}
+.fulcrum span{display:block;font-size:12px;white-space:nowrap}
+.scale16{position:relative;height:26px;background:#fff;border:1px solid #c4d3e6;border-radius:6px;margin:6px 0}
+.scale16 .mid{position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed var(--green)}
+.scale16 .mk{position:absolute;top:3px;width:14px;height:18px;margin-left:-7px;background:var(--orange);border-radius:3px;transition:left .3s}
+/* variance */
+.vwrap{position:relative;padding-bottom:40px}
+.sdbr{position:absolute;bottom:4px;height:14px;border:2px solid var(--purple);border-top:none;transition:.3s}
+.meanmk{position:absolute;bottom:20px;transform:translateX(-50%);color:var(--red);font-size:12px;font-weight:700}
+/* chapters */
+.chapter{display:none}
+.chapter.show{display:block;animation:fade .3s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.navtree .node{cursor:pointer;min-width:0;max-width:190px}
+.navtree .nd{padding-left:5px;padding-right:5px}
+.chap .nhead2{padding:8px 10px;font-size:14.5px;font-weight:700;color:var(--c);text-align:center}
+.chap.active{background:var(--c)}
+.chap.active .nhead2{color:#fff}
+.chap .nhead2 small{display:block;font-weight:400;font-size:11.5px;opacity:.8}
+.rootnav{position:relative;overflow:hidden;padding:14px 22px;font-weight:800;font-size:18px;letter-spacing:.5px;text-align:center;color:#fff;border-color:#3b3f7a;text-shadow:0 0 8px rgba(255,255,255,.6);
+  background:radial-gradient(1.5px 1.5px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 18% 70%,#fff,transparent),radial-gradient(2px 2px at 30% 35%,#fff,transparent),radial-gradient(1px 1px at 42% 80%,#cfd8ff,transparent),radial-gradient(1.5px 1.5px at 55% 20%,#fff,transparent),radial-gradient(1px 1px at 63% 60%,#fff,transparent),radial-gradient(2px 2px at 74% 30%,#ffeaa7,transparent),radial-gradient(1px 1px at 82% 75%,#fff,transparent),radial-gradient(1.5px 1.5px at 92% 40%,#fff,transparent),radial-gradient(1px 1px at 97% 85%,#cfd8ff,transparent),radial-gradient(ellipse at 70% 120%,rgba(142,68,173,.55),transparent 60%),radial-gradient(ellipse at 15% -20%,rgba(46,109,164,.6),transparent 60%),linear-gradient(160deg,#0b1030,#1b1f4b 55%,#2a1846)}
+.rootnav .star{position:absolute;color:#fff;font-size:9px;line-height:1;animation:twinkle 2.4s infinite;pointer-events:none;text-shadow:0 0 6px #fff}
+.rootnav .star:nth-child(2){animation-delay:.8s;color:#ffeaa7}
+.rootnav .star:nth-child(3){animation-delay:1.6s}
+.rootnav .star:nth-child(4){animation-delay:.4s;color:#cfd8ff}
+.rootnav .star:nth-child(5){animation-delay:1.2s}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.25)}}
+.tools{text-align:center;margin-top:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.small{font-size:12.5px;color:#667}
+footer{text-align:center;color:#889;font-size:12.5px;padding:10px 0 30px}
+/* optional badge */
+.optb{display:inline-block;background:#f3e8fd;color:var(--purple);border:1px solid #c9a6e8;border-radius:10px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:6px;vertical-align:middle;letter-spacing:.3px}
+.chap.active .optb{background:#fff}
+.optnote{background:#f3e8fd;border-left:4px solid var(--purple);padding:6px 10px;border-radius:6px;margin:6px 0;font-size:13.5px}
+/* ---------- chapter 6: palpatine ---------- */
+.pp{max-width:1060px;margin:0 auto;padding:10px 16px 40px}
+.pp h2{text-align:center;margin:10px 0 4px;color:var(--gold)}
+.pphead p{text-align:center;margin:0 0 12px;color:#556}
+.stepper{background:#fff;border:2px solid var(--gold);border-radius:16px;box-shadow:0 3px 12px rgba(30,60,100,.08);display:grid;grid-template-columns:1.1fr 1fr;gap:18px;padding:16px}
+.stage{background:#f5f8fc;border:1px dashed #c4d3e6;border-radius:12px;min-height:320px;padding:12px;position:relative;overflow:hidden}
+.stext{font-size:14.5px;line-height:1.5}
+.stext h3{margin:4px 0 6px;color:var(--gold)}
+.stext p{margin:6px 0}
+.snum{font-size:12px;color:#889;text-transform:uppercase;letter-spacing:.5px}
+.sdots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.sdot{width:30px;height:30px;border-radius:50%;border:2px solid #d8c48f;background:#fff;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#8a6d1f;padding:0;margin:0}
+.sdot.done{background:#f7ecd0}
+.sdot.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.snav{margin-top:10px}
+.snav .on{background:var(--gold);border-color:var(--gold)}
+.bubble{display:inline-block;background:#fff;border:2px solid #c4d3e6;border-radius:14px;padding:6px 12px;animation:pop .4s;font-size:14px}
+.bigface{font-size:70px;line-height:1.1;margin:14px 0}
+.secret{display:inline-block;background:#fdecea;color:#9b2c2c;border-radius:10px;padding:5px 12px;font-weight:700;margin-top:8px}
+.qrow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;transition:opacity .6s}
+.qrow.hid .qc{opacity:.2}
+.qc{width:40px;height:54px;border:2px solid #b8c7da;border-radius:9px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:#778;transition:opacity .6s}
+.qc small{font-size:9.5px;font-weight:600;white-space:nowrap}
+.qc.sec{border-color:var(--red);background:#fdecea}
+.qc.yes{background:#27ae60;border-color:#27ae60;color:#fff}
+.qc.no{background:#e9eef4;color:#95a5a6}
+.qc.sec.yes{background:var(--red);border-color:var(--red)}
+.qc.flip{animation:flip .4s}
+@keyframes flip{0%{transform:rotateY(0)}50%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+.ring{animation:ring 1.2s infinite}
+@keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.6)}50%{box-shadow:0 0 0 8px rgba(192,57,43,0)}}
+.prow{background:#fff;border-radius:10px;padding:8px;margin:6px 0;text-align:center}
+.pname{font-weight:700;font-size:13px;margin-bottom:4px}
+.psays{min-height:30px;margin-top:4px}
+.stream{display:flex;gap:4px;justify-content:center;overflow:hidden;min-height:28px;margin-bottom:8px}
+.stream span{min-width:24px;height:26px;border-radius:6px;background:#7f8c8d;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.stream span:last-child{background:var(--gold)}
+.mach2{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:16px 0}
+.rvbox{--c:var(--blue);border:2px solid var(--c);border-radius:12px;background:#fff;width:100px;padding:6px;text-align:center}
+.rvbox small{font-size:11px;color:var(--c);font-weight:700}
+.rvbox b{display:block;font-size:34px;color:var(--c)}
+.slines{background:#1e2733;color:#e6edf3;border-radius:8px;padding:8px;font-size:12.5px;overflow-x:auto;margin:6px 0}
+.slines span{display:block;padding:1px 4px;border-radius:4px;transition:.2s}
+.slines span.hl{background:#f0b429;color:#1e2733}
+.flow{display:flex;flex-direction:column;align-items:center;gap:2px}
+.fchip{background:#fff;border:2px solid #c4d3e6;border-radius:10px;padding:5px 12px;font-size:13.5px;transition:.25s}
+.fchip.on{background:var(--gold);color:#fff;border-color:var(--gold);transform:scale(1.06)}
+.fdown{color:#8a9bb0;font-size:13px;line-height:1.1}
+.wh{margin-top:26px!important}
+.wait{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:14px;margin-top:12px}
+.wcard{--c:var(--orange);background:#fff;border:2px solid var(--c);border-radius:14px;padding:12px 14px;box-shadow:0 3px 12px rgba(30,60,100,.08);font-size:14px;line-height:1.5}
+.wcard h3{margin:0 0 6px;font-size:16px;color:var(--c)}
+.wcard p{margin:6px 0}
+.wstage{background:#f5f8fc;border-radius:10px;border:1px dashed #c4d3e6;padding:8px;margin:8px 0;position:relative;overflow:hidden}
+.mc{position:absolute;width:12%;height:50px;border:2px solid var(--blue);border-radius:8px;background:#fff;text-align:center;font-size:10.5px;color:#667;transition:left .8s,top .8s;display:flex;flex-direction:column;justify-content:center}
+.mc b{font-size:18px;color:var(--blue)}
+.mc.sec{border-color:var(--red)}
+.mc.sec b{color:var(--red)}
+.box1{position:absolute;top:72px;height:112px;border:2px dashed #b8c7da;border-radius:10px;font-size:12px;font-weight:700;padding:4px 6px;opacity:.2;transition:opacity .6s}
+.box1 small{display:block;font-weight:400;color:#667}
+.box1.on{opacity:1;border-style:solid}
+.boxH{left:2%;width:68%;color:var(--blue);border-color:var(--blue)}
+.boxS{left:74%;width:24%;color:var(--red);border-color:var(--red)}
+.w2lab{position:absolute;left:3%;font-size:12px;font-weight:600}
+.w2box{position:absolute;left:60%;width:37%;top:8px;height:134px;border:2px solid var(--gold);border-radius:12px;background:#fff;display:flex;flex-direction:column;align-items:center;font-size:12px;font-weight:700;color:var(--gold);padding-top:4px}
+.w2box b{margin-top:auto;margin-bottom:4px;font-size:26px;color:#22313f}
+.tok{position:absolute;width:20px;height:20px;border-radius:50%;transition:left .7s,top .7s,background .5s;animation:pop .3s}
+.tok.g{background:#27ae60}
+.tok.r{background:var(--red)}
+.tok.mix{background:#8a9bb0}
+.stk{width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.seg{background:#4a8ad6;transition:height .9s;width:100%}
+.seg.mv{background:#f39c12;border-radius:4px 4px 0 0}
+.fly{position:absolute;bottom:26px;left:calc(100%/14);transform:translateX(-50%);font-size:11px;background:#f39c12;color:#fff;border-radius:8px;padding:1px 6px;opacity:0;transition:left 1s,opacity .3s;pointer-events:none}
+.fly.go{opacity:1;left:calc(300%/14)}
+.w4wrap{position:relative;padding:26px 0 22px}
+.w4bar{display:flex;height:34px;background:#fff;border:1px solid #c4d3e6;border-radius:6px;overflow:hidden}
+.w4seg{width:0;transition:width .45s;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(255,255,255,.6);overflow:hidden;white-space:nowrap}
+.w4m{position:absolute;top:0;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--red);white-space:nowrap}
+.w4m::after{content:'';position:absolute;left:50%;top:15px;height:40px;border-left:2px dashed var(--red)}
+.w4t{position:absolute;bottom:2px;transform:translateX(-50%);font-size:11px;color:#667}
+.nline{position:relative;height:64px;margin:8px 14px}
+.nline .ln{position:absolute;left:0;right:0;top:30px;border-top:2px solid #8a9bb0}
+.mk2{position:absolute;transform:translateX(-50%);transition:left .3s;font-size:12px;font-weight:700;text-align:center;white-space:nowrap}
+@media (max-width:760px){.stepper{grid-template-columns:1fr}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🚀 Random Variables: the Map</h1>
+  <p>Probability for AI · Section 2 review</p>
+  <div class="hint">👆 Click a box to open it &nbsp;·&nbsp; 🖱️ Move your mouse over <span class="t" data-k="dotted">dotted words</span> to see what they mean &nbsp;·&nbsp; 🐍 Click "Python code" to open the code &nbsp;·&nbsp; <span class="optb">⭐ Optional</span> = extra, you can skip it</div>
+</header>
+
+<!-- ================= CHAPTER NAVIGATION (same level) ================= -->
+<div class="tree navtree">
+<ul class="br"><li class="nd open">
+  <div class="node rootnav"><span class="star" style="left:7%;top:18%">✦</span><span class="star" style="left:22%;top:62%">✧</span><span class="star" style="left:78%;top:20%">✦</span><span class="star" style="left:90%;top:60%">✧</span><span class="star" style="left:50%;top:8%;font-size:7px">✦</span>✨ Section 2 ✨</div>
+  <ul class="br">
+    <li class="nd"><div class="node chap" data-ch="rv" style="--c:var(--blue)"><div class="nhead2">1. 🎲 Random Variable<small>discrete & continuous</small></div></div></li>
+    <li class="nd"><div class="node chap" data-ch="fn" style="--c:var(--teal)"><div class="nhead2">2. ⚙️ PMF · PDF · CDF<small>functions</small></div></div></li>
+    <li class="nd"><div class="node chap" data-ch="ev" style="--c:var(--green)"><div class="nhead2">3. ⚖️ Expected Value<small>weighted average</small></div></div></li>
+    <li class="nd"><div class="node chap" data-ch="var" style="--c:var(--purple)"><div class="nhead2">4. 📏 Variance & SD <span class="optb">⭐ Optional</span><small>spread</small></div></div></li>
+    <li class="nd"><div class="node chap" data-ch="model" style="--c:var(--red)"><div class="nhead2">5. 📖 Probabilistic Model<small>a story that makes data</small></div></div></li>
+    <li class="nd"><div class="node chap" data-ch="palp" style="--c:var(--gold)"><div class="nhead2">6. 👑 Palpatine Problem<small>section 2, step by step</small></div></div></li>
+  </ul>
+</li></ul>
+</div>
+
+<!-- ================= CHAPTER 1: RANDOM VARIABLE ================= -->
+<section class="chapter" id="ch-rv">
+<div class="tools"><button onclick="openAll('rv',true)">Open all</button><button onclick="openAll('rv',false)">Close all</button></div>
+<div class="tree"><ul class="br">
+<li class="nd">
+  <div class="node wide pulse" style="--c:var(--blue)">
+    <div class="nhead"><span class="arr">▶</span>🎲 Random Variable<span class="teaser">click me!</span></div>
+    <div class="nbody">
+      <div class="ntext">
+        <p>A [[rv|random variable]] is a <b>number that comes from a random event</b>.</p>
+        <p>It works like a <b>rule</b>: it looks at what happened (the [[outcome|outcome]]) and gives it a number.</p>
+        <div class="ex"><b>Example:</b> we flip 2 coins. All outcomes: [[omega|Ω]] = {HH, HT, TH, TT}.<br>
+        Our question: <i>"How many heads?"</i> We call this number <b>X</b>. X can be <b>0, 1 or 2</b>. We don't know it before the flip, and that's why it is <i>random</i>.</div>
+        <p>🔑 <b>Trick:</b> "X = 1" is an [[event|event]]: {HT, TH}. And when we have an event, we can find its [[prob|probability]]: P(X = 1) = 2/4 = 1/2.</p>
+        <p><b>How is it different from the variables we know?</b></p>
+        <table class="cmp">
+          <tr><th></th><th>Example</th><th>Value</th></tr>
+          <tr><td><b>Math variable</b></td><td>x + 3 = 5</td><td>x is <b>always</b> 2</td></tr>
+          <tr><td><b>Programming variable</b></td><td><code>age = 25</code></td><td>a box with <b>one</b> value</td></tr>
+          <tr><td><b>Random variable</b></td><td>X = number of heads</td><td><b>many</b> possible values, each with a <b>chance</b></td></tr>
+        </table>
+        <p>🌍 <b>Real life:</b> tomorrow's temperature, how many messages you get today, how long you wait for the bus. You don't know the number yet, but you know which numbers are likely.</p>
+        <details class="code"><summary>🐍 Python code: normal variable vs. random variable</summary><pre>import random
+
+x = 5                        # normal variable: x IS 5
+X = random.randint(1, 6)     # random variable: 1..6, each with chance 1/6
+print(X)                     # a different number every time!</pre></details>
+        <details class="code"><summary>🐍 Python code: 2 coins, X = number of heads</summary><pre>import random
+
+def flip_two_coins():
+    coins = [random.choice("HT") for i in range(2)]
+    X = coins.count("H")     # the random variable
+    return coins, X
+
+counts = {0: 0, 1: 0, 2: 0}
+for i in range(10000):
+    coins, X = flip_two_coins()
+    counts[X] += 1
+print(counts)   # about 2500, 5000, 2500</pre></details>
+        <p class="small">👇 Random variables come in two types. Open them below.</p>
+      </div>
+      <div class="nanim">
+        <h5>🪙 Try it: flip 2 coins</h5>
+        <div class="coins"><div class="coin" id="c1">?</div><div class="coin" id="c2">?</div></div>
+        <div class="center" id="coinOut">Click "Flip"!</div>
+        <div class="center" style="margin:6px 0">
+          <button onclick="flipCoins(1)">🪙 Flip once</button>
+          <button onclick="flipCoins(100)">Flip 100 times</button>
+          <button onclick="resetCoins()">Reset</button>
+        </div>
+        <div class="small center">All outcomes (Ω) and their X:</div>
+        <div class="omega">
+          <span class="om" data-o="TT">TT → 0</span><span class="om" data-o="HT">HT → 1</span>
+          <span class="om" data-o="TH">TH → 1</span><span class="om" data-o="HH">HH → 2</span>
+        </div>
+        <div class="small center">Events:</div>
+        <div class="omega">
+          <span class="omx" data-x="0">"X = 0" = {TT}</span><span class="omx" data-x="1">"X = 1" = {HT, TH}</span><span class="omx" data-x="2">"X = 2" = {HH}</span>
+        </div>
+        <div class="chartwrap"><div id="coinBars"></div></div>
+        <div class="legend">Blue bars: how often we got each X (<b id="coinN">0</b> flips). <span class="dash"></span> = the exact chance: 1/4, 1/2, 1/4. Flip many times and the bars get closer to the dashes!</div>
+      </div>
+    </div>
+  </div>
+  <ul class="br">
+    <!-- DISCRETE -->
+    <li class="nd">
+      <div class="node" style="--c:var(--green)">
+        <div class="nhead"><span class="arr">▶</span>🔢 [[discrete|Discrete]]<span class="teaser">values you can count</span></div>
+        <div class="nbody">
+          <div class="ntext">
+            <p><b>Discrete</b> = values you can <b>count</b>: 0, 1, 2, 3 … There are <b>gaps</b> between the values. There is nothing between 1 and 2!</p>
+            <p>If you ask "<b>how many?</b>", it is usually discrete.</p>
+            <ul><li>number of heads in 10 flips</li><li>number of emails in one hour</li><li>the number on a die</li></ul>
+            <p>We know <b>3 famous</b> discrete random variables: Bernoulli, Binomial and Poisson. 👇</p>
+          </div>
+          <div class="nanim center">
+            <h5>🎲 Roll a die</h5>
+            <div class="die" id="die">🎲</div>
+            <div class="nl"><span data-v="1">1</span><i>·</i><span data-v="2">2</span><i>·</i><span data-v="3">3</span><i>·</i><span data-v="4">4</span><i>·</i><span data-v="5">5</span><i>·</i><span data-v="6">6</span></div>
+            <div id="dieTxt" class="small">Values with gaps between them. You can count them.</div>
+            <button onclick="rollDie()">🎲 Roll</button>
+          </div>
+        </div>
+      </div>
+      <ul class="br">
+        <!-- BERNOULLI -->
+        <li class="nd">
+          <div class="node" style="--c:var(--orange)">
+            <div class="nhead"><span class="arr">▶</span>🪙 [[bern|Bernoulli]]<span class="teaser">one yes / no</span></div>
+            <div class="nbody">
+              <div class="ntext">
+                <p><b>One</b> yes/no [[trial|trial]].</p>
+                <p>X = <b>1</b> (yes) with chance [[p|p]] &nbsp;·&nbsp; X = <b>0</b> (no) with chance <b>1 − p</b></p>
+                <p>We write: <b>X ~ Ber(p)</b></p>
+                <p>Examples: Does it rain tomorrow? Does my bus come on time? Does one chatbot reply start with "Great question!"?</p>
+                <details class="code"><summary>🐍 Python code</summary><pre>import random
+
+def bernoulli(p):
+    return 1 if random.random() &lt; p else 0
+
+print(bernoulli(0.3))   # 1 about 30% of the time</pre></details>
+                <button class="jump" data-jump="fn:f-bern">→ Its formula (PMF)</button>
+              </div>
+              <div class="nanim center">
+                <h5>🌧️ Does it rain tomorrow?</h5>
+                <div class="row">p = chance of rain: <input type="range" id="bp" min="0" max="1" step="0.05" value="0.3" oninput="bernReset()"> <b id="bpv"></b></div>
+                <div class="bigicon" id="bIcon">❔</div>
+                <div id="bRes" class="small">Click "Try one day".</div>
+                <button onclick="bernTry(1)">Try one day</button><button onclick="bernTry(100)">100 days</button><button onclick="bernReset()">Reset</button>
+                <div class="chartwrap"><div id="bBars"></div></div>
+                <div class="legend">Days tried: <b id="bN">0</b> · <span class="dash"></span> = exact chance (1 − p and p)</div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <!-- BINOMIAL -->
+        <li class="nd">
+          <div class="node" style="--c:var(--orange)">
+            <div class="nhead"><span class="arr">▶</span>🎯 [[bin|Binomial]]<span class="teaser">count the yeses</span></div>
+            <div class="nbody">
+              <div class="ntext">
+                <p>We do <b>[[n|n]] Bernoulli trials</b> and <b>count the yeses</b>.</p>
+                <p>Rules: the trials are [[indep|independent]], and every trial has the <b>same</b> chance p.</p>
+                <p>We write: <b>X ~ Bin(n, p)</b>. X can be 0, 1, …, n.</p>
+                <div class="key">💡 A binomial = <b>n Bernoullis added together</b>. And Bin(1, p) is the same as Ber(p).</div>
+                <p>Example: our Palpatine poll! 5 harmless questions, each 50/50 → <b>Bin(5, ½)</b>.</p>
+                <details class="code"><summary>🐍 Python code</summary><pre>def binomial(n, p):
+    # n Bernoullis added together
+    return sum(bernoulli(p) for i in range(n))
+
+print(binomial(5, 0.5))   # 0, 1, 2, 3, 4 or 5</pre></details>
+                <button class="jump" data-jump="fn:f-bin">→ Its formula (PMF)</button>
+              </div>
+              <div class="nanim center">
+                <h5>❓ One person answers n questions</h5>
+                <div class="row">n = <input type="range" id="bn" min="1" max="10" step="1" value="5" oninput="binReset()"> <b id="bnv"></b></div>
+                <div class="row">p = <input type="range" id="bpp" min="0.05" max="0.95" step="0.05" value="0.5" oninput="binReset()"> <b id="bppv"></b></div>
+                <div class="qs" id="qs"></div>
+                <div id="binRes" class="small"></div>
+                <button onclick="binOne()">🙋 One person</button><button onclick="binMany(100)">100 people</button><button onclick="binReset()">Reset</button>
+                <div class="chartwrap"><div id="binBars"></div></div>
+                <div class="legend">People: <b id="binN">0</b> · <span class="dash"></span> = exact binomial chance</div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <!-- POISSON -->
+        <li class="nd">
+          <div class="node" style="--c:var(--orange)">
+            <div class="nhead"><span class="arr">▶</span>📬 [[pois|Poisson]]<span class="teaser">rare events</span></div>
+            <div class="nbody">
+              <div class="ntext">
+                <p>It counts <b>rare events</b> in a time or a space: emails in 1 hour, typos on one page, cars in 1 minute.</p>
+                <p>Its [[param|parameter]] is [[lambda|λ]] (lambda) = the <b>average</b> number of events. We write: <b>X ~ Poi(λ)</b></p>
+                <div class="key">🔑 <b>It is really a binomial!</b> Cut 1 hour into many tiny pieces. In each piece an email comes or doesn't come (that's a Bernoulli). We get <b>many trials (big n)</b> and a <b>tiny chance (small p)</b>.<br>
+                Poisson is just an [[approx|approximation]] of this binomial, because it is <b>much easier to calculate</b>.</div>
+                <details class="code"><summary>🐍 Python code</summary><pre>def poisson_like(lam, n=600):
+    p = lam / n          # many tiny pieces, tiny chance
+    return binomial(n, p)
+
+print(poisson_like(2))   # emails in one hour, average 2</pre></details>
+                <button class="jump" data-jump="fn:f-poi">→ Its formula (PMF)</button>
+              </div>
+              <div class="nanim center">
+                <h5>📧 Emails in one hour</h5>
+                <div class="row">λ = average emails per hour: <input type="range" id="pl" min="0.5" max="6" step="0.5" value="2" oninput="poiReset()"> <b id="plv"></b></div>
+                <div class="small">1 hour = <b>600</b> tiny pieces (6 seconds each). Chance in each piece: p = λ/600 = <b id="pp"></b></div>
+                <div class="tl" id="tl"></div>
+                <div class="tlab"><span>0 min</span><span>30 min</span><span>60 min</span></div>
+                <div id="poiRes" class="small"></div>
+                <button onclick="poiHour()">▶ Run one hour</button><button onclick="poiMany(100)">100 hours</button><button onclick="poiReset()">Reset</button>
+                <div class="chartwrap"><div id="poiBars"></div></div>
+                <div class="legend">Hours: <b id="poiN">0</b> · <span class="dash"></span> = exact chance</div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <!-- CONTINUOUS -->
+    <li class="nd">
+      <div class="node" style="--c:var(--purple)">
+        <div class="nhead"><span class="arr">▶</span>📏 [[continuous|Continuous]] <span class="optb">⭐ Optional</span><span class="teaser">values you measure</span></div>
+        <div class="nbody">
+          <div class="ntext">
+            <p><b>Continuous</b> = values you <b>measure</b>. It can be any number in a range.</p>
+            <p>If you ask "<b>how much? how long?</b>", it is usually continuous. Examples: height, time you wait for the bus, temperature.</p>
+            <p>📏 Is your height 172 cm? Take a better ruler: 172.3 … 172.31 … 172.311 … You can <b>always zoom in more</b>. Maybe you are 0.000001 cm taller! There is no "next number" after 172.3. Between any two numbers there are always more numbers, so we <b>can't count</b> the values.</p>
+            <div class="ex">⚠️ So the chance of one <b>exact</b> value (exactly 172.311111… cm) is <b>0</b>.🛑 This branch stops here for now. Instead, we ask about a <b>range</b>: "What is the chance that the height is between 165 and 175 cm?"</div>
+            <p class="stop"></p>
+            <button class="jump" data-jump="fn:f-pdf">→ Its function (PDF)</button>
+          </div>
+          <div class="nanim center">
+            <h5>🔍 Zoom into a height</h5>
+            <div id="ruler"></div>
+            <div id="rulerTxt" class="small"></div>
+            <button onclick="zoom(1)">🔍 Zoom in</button><button onclick="zoom(-1)">Zoom out</button>
+            <div class="small" style="margin-top:6px">Every time you zoom in, there are new numbers between the marks. It never ends!</div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</li>
+</ul></div>
+</section>
+
+<!-- ================= CHAPTER 2: FUNCTIONS ================= -->
+<section class="chapter" id="ch-fn">
+<div class="tools"><button onclick="openAll('fn',true)">Open all</button><button onclick="openAll('fn',false)">Close all</button></div>
+<div class="tree"><ul class="br">
+<li class="nd">
+  <div class="node wide" style="--c:var(--teal)">
+    <div class="nhead"><span class="arr">▶</span>⚙️ [[pmf|PMF]] · [[pdf|PDF]] · [[cdf|CDF]]: they are all functions!<span class="teaser">click me!</span></div>
+    <div class="nbody">
+      <div class="ntext">
+        <p><b>First: what does a function do?</b></p>
+        <p>A [[func|function]] is a <b>rule</b>. A value goes <b>in</b> (the [[input|input]]), the rule changes it, and another value comes <b>out</b> (the [[output|output]]). It is the same in math and in programming.</p>
+        <ul>
+          <li><b>Math, linear:</b> f(x) = 2x + 1 → f(3) = 7</li>
+          <li><b>Math, logarithmic:</b> f(x) = log₁₀(x) → f(100) = 2</li>
+          <li><b>Programming:</b> <code>def f(x): return 2*x + 1</code></li>
+          <li><b>Life:</b> a kitchen machine: apples in → apple pie out 🥧</li>
+        </ul>
+        <div class="key"><b>PMF, PDF and CDF are also just functions!</b> Nothing magic. The only special thing is the input and the output:<br><b>a value of X goes in → a probability comes out.</b></div>
+        <p><b>Different from a normal function:</b> 1) the output is always between 0 and 1; 2) all the outputs add up to 1.</p>
+        <details class="code"><summary>🐍 Python code: a normal function vs. a probability function</summary><pre>def f(x):                 # a normal math function
+    return 2 * x + 1
+
+def pmf_two_coins(k):     # a probability function (PMF)
+    table = {0: 0.25, 1: 0.50, 2: 0.25}
+    return table.get(k, 0)
+
+print(f(3))               # 7
+print(pmf_two_coins(1))   # 0.5</pre></details>
+        <p class="small">👇 There are 3 of them. Open them below. (PDF and CDF are <span class="optb">⭐ Optional</span>. For the Palpatine problem you only need the PMF.)</p>
+      </div>
+      <div class="nanim">
+        <h5>🏭 The function machine</h5>
+        <div class="center">
+          <button class="mbtn" data-m="kitchen" onclick="setMode('kitchen')">🍳 Kitchen</button>
+          <button class="mbtn" data-m="lin" onclick="setMode('lin')">📈 Linear</button>
+          <button class="mbtn" data-m="log" onclick="setMode('log')">📉 Log</button>
+          <button class="mbtn" data-m="pmf" onclick="setMode('pmf')">🎲 PMF</button>
+        </div>
+        <div class="mach">
+          <div class="mIn" id="mIn">?</div><span class="arrowtxt">➜</span>
+          <div class="machine" id="machine"><span class="gear">⚙️</span><div id="mRule"></div></div>
+          <span class="arrowtxt">➜</span><div class="mOut" id="mOut">?</div>
+        </div>
+        <div class="center small">Choose an input:</div>
+        <div class="center" id="mInputs"></div>
+        <div class="ex" id="mNote" style="font-size:13px"></div>
+      </div>
+    </div>
+  </div>
+  <ul class="br">
+    <!-- PMF -->
+    <li class="nd">
+      <div class="node" id="f-pmf" style="--c:var(--green)">
+        <div class="nhead"><span class="arr">▶</span>📊 PMF<span class="teaser">for discrete</span></div>
+        <div class="nbody">
+          <div class="ntext">
+            <p><b>PMF</b> = Probability <b>Mass</b> Function. It is the name we use for the function of a [[discrete|discrete]] random variable.</p>
+            <div class="formula">p(k) = P(X = k)</div>
+            <p>"What is the chance that X is <b>exactly</b> k?"</p>
+            <p>Every normal function has its own formula (linear, log, …). It's the same here: <b>every distribution has its own PMF formula.</b> Open them below 👇</p>
+            <p>A PMF is not only a formula. We can show it in <b>3 ways</b>: 1) a formula, 2) a table (like a Python dictionary), 3) a graph with bars. All bars add up to 1.</p>
+          </div>
+          <div class="nanim">
+            <h5>🔀 One PMF, 3 ways</h5>
+            <div class="row">Distribution: <select id="pmfD" onchange="pmfDraw()"><option value="bern">Bernoulli</option><option value="bin" selected>Binomial</option><option value="poi">Poisson</option></select></div>
+            <div class="row" id="rowP">p = <input type="range" id="pmfP" min="0.05" max="0.95" step="0.05" value="0.5" oninput="pmfDraw()"> <b id="pmfPv"></b></div>
+            <div class="row" id="rowN">n = <input type="range" id="pmfN" min="1" max="10" step="1" value="5" oninput="pmfDraw()"> <b id="pmfNv"></b></div>
+            <div class="row" id="rowL">λ = <input type="range" id="pmfL" min="0.5" max="6" step="0.5" value="2" oninput="pmfDraw()"> <b id="pmfLv"></b></div>
+            <div class="small"><b>1) Formula:</b></div><div class="formula" id="pmfF" style="font-size:15px"></div>
+            <div class="small"><b>2) Table:</b></div><div class="scroll" id="pmfT"></div>
+            <div class="small"><b>3) Graph:</b> (move the mouse over a bar)</div>
+            <div class="chartwrap"><div id="pmfB"></div></div>
+            <div class="small">Sum of all bars ≈ <b id="pmfS"></b></div>
+          </div>
+        </div>
+      </div>
+      <ul class="br">
+        <li class="nd">
+          <div class="node" id="f-bern" style="--c:var(--orange)">
+            <div class="nhead"><span class="arr">▶</span>🪙 Bernoulli PMF<span class="teaser">the simplest formula</span></div>
+            <div class="nbody"><div class="ntext">
+              <div class="formula">P(X = 1) = p &nbsp;&nbsp; P(X = 0) = 1 − p</div>
+              <p>Short form, one line:</p>
+              <div class="formula">P(X = k) = p<sup>k</sup> · (1 − p)<sup>1 − k</sup>, &nbsp; k = 0 or 1</div>
+              <p>Check: k = 1 → p¹ · (1−p)⁰ = <b>p</b> ✔ &nbsp; k = 0 → p⁰ · (1−p)¹ = <b>1 − p</b> ✔</p>
+              <details class="code"><summary>🐍 Python code</summary><pre>def bernoulli_pmf(k, p):
+    return p if k == 1 else 1 - p</pre></details>
+            </div></div>
+          </div>
+        </li>
+        <li class="nd">
+          <div class="node" id="f-bin" style="--c:var(--orange)">
+            <div class="nhead"><span class="arr">▶</span>🎯 Binomial PMF<span class="teaser">C(n,k) · pᵏ · (1−p)ⁿ⁻ᵏ</span></div>
+            <div class="nbody"><div class="ntext">
+              <div class="formula">P(X = k) = [[comb|C(n, k)]] · p<sup>k</sup> · (1 − p)<sup>n − k</sup></div>
+              <p>What each piece means, in words:</p>
+              <ul>
+                <li><b>p<sup>k</sup></b>: k answers are "yes"</li>
+                <li><b>(1 − p)<sup>n − k</sup></b>: all the other answers are "no"</li>
+                <li><b>C(n, k)</b>: how many different ways we can place k yeses among n trials. C(n, k) = n! / (k! · (n − k)!), where [[fact|k!]] = 1·2·…·k</li>
+              </ul>
+              <details class="code"><summary>🐍 Python code</summary><pre>from math import comb
+
+def binomial_pmf(k, n, p):
+    return comb(n, k) * p**k * (1 - p)**(n - k)
+
+print(binomial_pmf(5, 5, 0.5))   # 1/32 = 0.03125</pre></details>
+            </div>
+            <div class="nanim">
+              <h5>🧮 Calculator</h5>
+              <div class="row">n <input type="number" id="cn" value="5" min="1" max="60" style="width:55px" oninput="binCalc()"> p <input type="number" id="cp" value="0.5" step="0.05" min="0" max="1" style="width:65px" oninput="binCalc()"> k <input type="number" id="ck" value="5" min="0" max="60" style="width:55px" oninput="binCalc()"></div>
+              <div id="cOut" style="font-size:13.5px"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="nd">
+          <div class="node" id="f-poi" style="--c:var(--orange)">
+            <div class="nhead"><span class="arr">▶</span>📬 Poisson PMF<span class="teaser">comes from the binomial</span></div>
+            <div class="nbody"><div class="ntext">
+              <div class="formula">P(X = k) = λ<sup>k</sup> · [[e|e]]<sup>−λ</sup> / k!</div>
+              <p>This formula <b>comes from the binomial</b>. When n is <b>big</b> and p is <b>small</b>, the binomial formula is very hard to calculate. So mathematicians made it simpler. It's an [[approx|approximation]]: almost the same answer, much less work.</p>
+              <p>We only use λ = n · p (the average), so we don't even need to know n and p!</p>
+              <details class="opt"><summary>⭐ Optional: where does the formula come from?</summary><div>
+                <p><b>Why is the binomial so bad here?</b> Let's try n = 1000, p = 0.009, k = 5:</p>
+                <div id="hw" style="font-size:13.5px;background:#fff;border-radius:8px;padding:8px"></div>
+                <p><b>Step by step, from binomial to Poisson:</b></p>
+                <p><b>Step 1.</b> The average is λ = n · p, so <b>p = λ / n</b>. Replace p with λ/n:</p>
+                <div class="formula" style="font-size:15px">C(n, k) · (λ/n)<sup>k</sup> · (1 − λ/n)<sup>n − k</sup></div>
+                <p><b>Step 2.</b> Split it into pieces:</p>
+                <div class="formula" style="font-size:14px">[ n(n−1)…(n−k+1) / n<sup>k</sup> ] · (λ<sup>k</sup>/k!) · (1 − λ/n)<sup>n</sup> · (1 − λ/n)<sup>−k</sup></div>
+                <p><b>Step 3.</b> Now make n very big:</p>
+                <ul>
+                  <li>n(n−1)…(n−k+1) / n<sup>k</sup> → <b>1</b> (e.g. 1000·999·998 / 1000³ ≈ 1), so it goes away</li>
+                  <li>(1 − λ/n)<sup>n</sup> → <b>e<sup>−λ</sup></b> (a famous limit, see the table below)</li>
+                  <li>(1 − λ/n)<sup>−k</sup> → <b>1</b>, because λ/n is tiny, so we delete it</li>
+                </ul>
+                <p><b>Step 4.</b> What is left:</p>
+                <div class="formula">P(X = k) ≈ λ<sup>k</sup> · e<sup>−λ</sup> / k! ✅</div>
+                <div id="eTab"></div>
+              </div></details>
+              <details class="code"><summary>🐍 Python code</summary><pre>from math import exp, factorial
+
+def poisson_pmf(k, lam):
+    return lam**k * exp(-lam) / factorial(k)
+
+print(poisson_pmf(5, 9))     # 0.0607...</pre></details>
+            </div>
+            <div class="nanim">
+              <h5>⚔️ Binomial vs. Poisson (λ = 2)</h5>
+              <div class="row">n = <select id="pcN" onchange="poiCmp()"><option>3</option><option>5</option><option selected>10</option><option>30</option><option>100</option><option>1000</option></select> → p = 2/n = <b id="pcPv"></b></div>
+              <div class="chartwrap"><div id="pcB"></div></div>
+              <div class="legend">Blue = Binomial(n, 2/n) · <span class="dash"></span> = Poisson(2)<br>Biggest difference: <b id="pcD"></b>. Make n bigger and watch them become the same!</div>
+            </div></div>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <!-- PDF -->
+    <li class="nd">
+      <div class="node" id="f-pdf" style="--c:var(--purple)">
+        <div class="nhead"><span class="arr">▶</span>📈 PDF <span class="optb">⭐ Optional</span><span class="teaser">for continuous</span></div>
+        <div class="nbody">
+          <div class="ntext">
+            <p><b>PDF</b> = Probability <b>Density</b> Function. It is only for [[continuous|continuous]] random variables.</p>
+            <p>The chance of one exact value is 0, so we ask about a <b>range</b>:</p>
+            <div class="formula">P(a ≤ X ≤ b) = area under the curve</div>
+            <p>⚠️ The <b>height</b> of the curve ([[density|density]]) is <b>not</b> a probability. Only the <b>area</b> is.</p>
+          </div>
+          <div class="nanim">
+            <h5>📐 Height of people (cm)</h5>
+            <div id="pdfSvg"></div>
+            <div class="row">from <input type="range" id="pa" min="145" max="195" value="165" oninput="pdfDraw()"> </div>
+            <div class="row">to &nbsp;&nbsp;&nbsp;<input type="range" id="pb" min="145" max="195" value="175" oninput="pdfDraw()"></div>
+            <div id="pdfTxt" class="small"></div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <!-- CDF -->
+    <li class="nd">
+      <div class="node" id="f-cdf" style="--c:var(--blue)">
+        <div class="nhead"><span class="arr">▶</span>🪜 CDF <span class="optb">⭐ Optional</span><span class="teaser">for both</span></div>
+        <div class="nbody">
+          <div class="ntext">
+            <p><b>CDF</b> = Cumulative Distribution Function. It works for <b>both</b> discrete and continuous.</p>
+            <div class="formula">F(x) = P(X ≤ x)</div>
+            <p>"What is the chance that X is <b>x or less</b>?" It <b>adds up</b> all the chances from the left.</p>
+            <ul><li>It goes from <b>0 to 1</b> and never goes down.</li><li>Discrete → a <b>staircase</b>. Continuous → a <b>smooth hill</b>.</li></ul>
+            <details class="code"><summary>🐍 Python code</summary><pre>def cdf(x, pmf_table):
+    return sum(prob for k, prob in pmf_table.items() if k &lt;= x)
+
+die = {k: 1/6 for k in range(1, 7)}
+print(cdf(2, die))    # 2/6 = 0.333</pre></details>
+          </div>
+          <div class="nanim">
+            <h5>🎲 CDF of one die</h5>
+            <div class="row">x = <input type="range" id="cx" min="0" max="7" step="0.1" value="2.5" oninput="cdfDraw()"> <b id="cxv"></b></div>
+            <div class="chartwrap"><div id="cdfB"></div></div>
+            <div id="cdfSvg"></div>
+            <div id="cdfTxt" class="small center"></div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</li>
+</ul></div>
+</section>
+
+<!-- ================= CHAPTER 3: EXPECTED VALUE ================= -->
+<section class="chapter" id="ch-ev">
+<div class="tools"><button onclick="openAll('ev',true)">Open all</button><button onclick="openAll('ev',false)">Close all</button></div>
+<div class="tree"><ul class="br">
+<li class="nd">
+  <div class="node wide" style="--c:var(--green)">
+    <div class="nhead"><span class="arr">▶</span>⚖️ [[ev|Expected Value]] E[X]<span class="teaser">click me!</span></div>
+    <div class="nbody">
+      <div class="ntext">
+        <p>The <b>expected value</b> is the <b>average value</b> we get if we repeat the random event <b>many, many times</b>.</p>
+        <p>It is also called the [[wavg|weighted average]]: every value is multiplied by its chance (its "weight"), and then we add everything.</p>
+        <div class="formula">E[X] = Σ k · P(X = k)</div>
+        <p><b>Normal average vs. weighted average:</b> the normal average of a die is (1+2+3+4+5+6)/6 = 3.5, and every value has the same weight. When the chances are <b>not</b> equal, the values with a <b>bigger chance count more</b>.</p>
+        <div class="ex">🎮 <b>A game:</b> you win $10 with chance 0.1, and $0 with chance 0.9.<br>E[X] = 10 · 0.1 + 0 · 0.9 = <b>$1</b>. If the game costs more than $1, you lose money in the long run! 😄</div>
+        <div class="key">⚖️ <b>Picture:</b> bars are weights on a beam. E[X] is the point where the beam <b>balances</b>.</div>
+        <details class="code"><summary>🐍 Python code</summary><pre>die = {1: 1/6, 2: 1/6, 3: 1/6, 4: 1/6, 5: 1/6, 6: 1/6}
+E = sum(k * prob for k, prob in die.items())
+print(E)    # 3.5</pre></details>
+      </div>
+      <div class="nanim">
+        <h5>⚖️ A loaded die: find the balance point</h5>
+        <div class="row">Chance of 6: <input type="range" id="eq" min="0.05" max="0.9" step="0.01" value="0.1667" oninput="evDraw()"> <b id="eqv"></b></div>
+        <div class="balance"><div class="chartwrap"><div id="evB"></div></div><div class="fulcrum" id="fulcrum">▲<span>E = <b id="evE"></b></span></div></div>
+        <div id="evCalc" class="small"></div>
+        <hr>
+        <h5>🔁 Roll a fair die many times</h5>
+        <button onclick="raRoll(10)">Roll 10</button><button onclick="raRoll(100)">Roll 100</button><button onclick="raRoll(1000)">Roll 1000</button><button onclick="raReset()">Reset</button>
+        <div class="scale16"><div class="mid"></div><div class="mk" id="raBar" style="left:50%"></div></div>
+        <div class="tlab"><span>1</span><span>3.5</span><span>6</span></div>
+        <div id="raTxt" class="small">The average moves closer to 3.5 when you roll more.</div>
+      </div>
+    </div>
+  </div>
+  <ul class="br">
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>🪙 Bernoulli: E[X] = p<span class="teaser">why?</span></div>
+      <div class="nbody"><div class="ntext">
+        <div class="formula">E[X] = 1 · p + 0 · (1 − p) = p</div>
+        <p><b>Why it makes sense:</b> if it rains with chance 0.3, then over many days, it rains on about 30% of them. The average of all the 1s and 0s is 0.3.</p>
+      </div></div></div></li>
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>🎯 Binomial: E[X] = n · p<span class="teaser">why?</span></div>
+      <div class="nbody"><div class="ntext">
+        <p>A binomial is <b>n Bernoullis added together</b>, and each one has average p:</p>
+        <div class="formula">E[X] = p + p + … + p (n times) = n · p</div>
+        <p><b>Example:</b> 5 harmless questions, each 50/50 → 5 · ½ = <b>2.5</b> yeses on average. That's our number from the Palpatine poll!</p>
+      </div></div></div></li>
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>📬 Poisson: E[X] = λ<span class="teaser">why?</span></div>
+      <div class="nbody"><div class="ntext">
+        <p>Poisson is a binomial with p = λ/n, so:</p>
+        <div class="formula">E[X] = n · (λ / n) = λ</div>
+        <p>That's why λ is called "the average number of events".</p>
+      </div></div></div></li>
+  </ul>
+</li>
+</ul></div>
+</section>
+
+<!-- ================= CHAPTER 4: VARIANCE ================= -->
+<section class="chapter" id="ch-var">
+<div class="tools"><button onclick="openAll('var',true)">Open all</button><button onclick="openAll('var',false)">Close all</button></div>
+<div class="tree"><ul class="br">
+<li class="nd">
+  <div class="node wide" style="--c:var(--purple)">
+    <div class="nhead"><span class="arr">▶</span>📏 [[var|Variance]] & [[sd|Standard Deviation]] <span class="optb">⭐ Optional</span><span class="teaser">click me!</span></div>
+    <div class="nbody">
+      <div class="ntext">
+        <div class="optnote">⭐ <b>Optional:</b> this chapter is extra. You don't need variance or SD for the Palpatine problem.</div>
+        <p>The expected value tells us <b>where the center is</b>. But two random variables can have the <b>same center</b> and still be very different!</p>
+        <ul><li>A: always 5</li><li>B: 0 or 10, 50/50</li></ul>
+        <p>Both have E = 5, but B <b>jumps around</b> much more. <b>Variance</b> measures this <b>spread</b>.</p>
+        <div class="formula">Var(X) = E[(X − μ)²]</div>
+        <p>"On average, how far are the values from the center ([[mean|μ]]), squared?"</p>
+        <p>An easier way to calculate it:</p>
+        <div class="formula">Var(X) = E[X²] − (E[X])²</div>
+        <div class="key">📏 <b>From variance to standard deviation:</b> variance has <b>squared units</b> (cm²), so it is hard to understand. So we take the square root:
+        <div class="formula">SD(X) = σ = √Var(X)</div>
+        Now it has the <b>same units as X</b>. Read it as: "the values are usually about σ away from the average".</div>
+      </div>
+      <div class="nanim">
+        <h5>↔️ Same center, different spread</h5>
+        <div class="row">Distance from 5: <input type="range" id="vd" min="0" max="5" step="1" value="2" oninput="varDraw()"> <b id="vdv"></b></div>
+        <div class="vwrap"><div class="chartwrap"><div id="varB"></div></div><div class="meanmk" id="meanMk">▼ mean</div><div class="sdbr" id="sdBr"></div></div>
+        <div id="varTxt" class="small center"></div>
+        <div class="small center">Purple bracket = from mean − SD to mean + SD</div>
+      </div>
+    </div>
+  </div>
+  <ul class="br">
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>🎲 Example: one die<span class="teaser">step by step</span></div>
+      <div class="nbody"><div class="ntext">
+        <p><b>1.</b> E[X] = (1+2+3+4+5+6)/6 = <b>3.5</b></p>
+        <p><b>2.</b> E[X²] = (1+4+9+16+25+36)/6 = 91/6 ≈ <b>15.17</b></p>
+        <p><b>3.</b> Var(X) = 15.17 − 3.5² ≈ <b>2.92</b></p>
+        <p><b>4.</b> SD = √2.92 ≈ <b>1.71</b></p>
+        <details class="code"><summary>🐍 Python code</summary><pre>die = {k: 1/6 for k in range(1, 7)}
+E   = sum(k * p for k, p in die.items())       # 3.5
+E2  = sum(k**2 * p for k, p in die.items())    # 15.17
+var = E2 - E**2                                # 2.92
+sd  = var ** 0.5                               # 1.71
+print(E, var, sd)</pre></details>
+      </div></div></div></li>
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>👨‍👩‍👧 Our three friends<span class="teaser">E and Var table</span></div>
+      <div class="nbody"><div class="ntext">
+        <table class="cmp">
+          <tr><th></th><th>E[X]</th><th>Var(X)</th><th>SD</th></tr>
+          <tr><td><b>Ber(p)</b></td><td>p</td><td>p(1 − p)</td><td>√(p(1 − p))</td></tr>
+          <tr><td><b>Bin(n, p)</b></td><td>n·p</td><td>n·p(1 − p)</td><td>√(n·p(1 − p))</td></tr>
+          <tr><td><b>Poi(λ)</b></td><td>λ</td><td>λ</td><td>√λ</td></tr>
+        </table>
+        <p class="small">Example: Bin(5, ½) → Var = 5 · ½ · ½ = 1.25, SD ≈ 1.12</p>
+      </div></div></div></li>
+  </ul>
+</li>
+</ul></div>
+</section>
+
+<!-- ================= CHAPTER 5: PROBABILISTIC MODEL ================= -->
+<section class="chapter" id="ch-model">
+<div class="tools"><button onclick="openAll('model',true)">Open all</button><button onclick="openAll('model',false)">Close all</button></div>
+<div class="tree"><ul class="br">
+<li class="nd">
+  <div class="node wide" style="--c:var(--red)">
+    <div class="nhead"><span class="arr">▶</span>📖 [[model|Probabilistic Model]]<span class="teaser">click me!</span></div>
+    <div class="nbody">
+      <div class="ntext">
+        <p>A probabilistic model is <b>a story that makes data</b>. 📖</p>
+        <p>The story uses random variables, and each one has [[param|parameters]]: the "knobs" of the story, like p, n or λ.</p>
+        <p>With a story we can do 2 things:</p>
+        <ol>
+          <li><b>Make fake data</b> ([[sim|simulation]]): run the story on a computer many times, then count.</li>
+          <li><b>Find the knobs</b>: turn the knobs until the fake data looks like the real data.</li>
+        </ol>
+        <div class="ex">🚀 <b>Our Palpatine poll story, for one person:</b><br>
+        • harmless yeses: H ~ Bin(5, ½)<br>
+        • Palpatine secret: S ~ Ber(p) ← <b>the knob we want</b><br>
+        • answer = H + S (and a 0 becomes a 1)</div>
+        <p>👉 Try it on the right: move p and look at the bars. When do the two charts look the same? (Bonus: also compare the averages.) And look at the bar at 0!</p>
+        <button class="jump" data-jump="palp:pp-top">→ Step by step, with animations: the Palpatine problem</button>
+        <details class="code"><summary>🐍 Python code: the Palpatine story</summary><pre>import random
+
+def one_answer(p):
+    H = binomial(5, 0.5)      # harmless yeses
+    S = bernoulli(p)          # secret: supports Palpatine?
+    answer = H + S
+    if answer == 0:           # nobody says 0
+        answer = 1
+    return answer
+
+fake = [one_answer(0.1) for i in range(1000)]
+print(sum(fake) / 1000)       # compare with the real average</pre></details>
+      </div>
+      <div class="nanim">
+        <h5>👑 The Palpatine poll</h5>
+        <div class="row">p = chance of supporting Palpatine: <input type="range" id="mp" min="0" max="0.5" step="0.01" value="0.3" oninput="modelRun()"> <b id="mpv"></b></div>
+        <div class="row"><label><input type="checkbox" id="mfix" onchange="modelRun()"> Fix: nobody says 0, because 0 shows a "no" 🪓 (a 0 becomes a 1)</label></div>
+        <div class="two">
+          <div><div class="small center"><b>Real answers</b> (1000)</div><div class="chartwrap"><div id="realB"></div></div><div class="small center">average: <b id="realM"></b></div></div>
+          <div><div class="small center"><b>Our story</b> (1000)</div><div class="chartwrap"><div id="modB"></div></div><div class="small center">average: <b id="modM"></b></div></div>
+        </div>
+        <div class="ex" id="mHint" style="font-size:13px"></div>
+        <button onclick="modelRun()">🔁 Run the story again</button>
+        <button id="reveal" onclick="this.textContent='🔓 The hidden truth: p = 0.09'">🔒 Reveal the truth</button>
+      </div>
+    </div>
+  </div>
+  <ul class="br">
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>1️⃣ Make fake data<span class="teaser">the coffee shop ☕</span></div>
+      <div class="nbody"><div class="ntext">
+        <p><b>Story:</b> "Every customer buys coffee with chance <b>p</b>. A person who buys coffee also buys a cake with chance <b>q</b>."</p>
+        <p>We run the story for 1000 customers and <b>count</b>. Now we can answer questions like "How many cakes should we bake tomorrow?"</p>
+        <details class="code"><summary>🐍 Python code</summary><pre>import random
+
+def one_customer(p, q):
+    coffee = random.random() &lt; p                # Bernoulli(p)
+    cake = coffee and random.random() &lt; q       # Bernoulli(q), only if coffee
+    return coffee, cake
+
+customers = [one_customer(0.7, 0.3) for i in range(1000)]
+cakes = sum(cake for coffee, cake in customers)
+print("Cakes sold:", cakes)    # around 1000 * 0.7 * 0.3 = 210</pre></details>
+      </div>
+      <div class="nanim">
+        <div class="row">p (coffee) <input type="range" id="cfp" min="0" max="1" step="0.05" value="0.7" oninput="coffeeRun()"> <b id="cfpv"></b></div>
+        <div class="row">q (cake) <input type="range" id="cfq" min="0" max="1" step="0.05" value="0.3" oninput="coffeeRun()"> <b id="cfqv"></b></div>
+        <button onclick="coffeeRun()">☕ Run 1000 customers</button>
+        <div id="cfOut" style="font-size:13.5px;margin-top:6px"></div>
+      </div></div></div></li>
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>2️⃣ Turn the knobs<span class="teaser">fake ≈ real</span></div>
+      <div class="nbody"><div class="ntext">
+        <p>Usually we <b>don't know</b> the parameters. But we have <b>real data</b>. So we:</p>
+        <ol><li><b>Guess</b> the parameters</li><li><b>Run</b> the story → fake data</li><li><b>Compare</b> fake data with real data</li><li><b>Adjust</b> (turn the knobs) until fake ≈ real</li></ol>
+        <p>That's exactly what we did with Palpatine: we moved the slider until the fake bars looked like the real bars → p ≈ 0.1. 🎉 (Bonus: the averages match there too.)</p>
+        <p class="small">Small differences in the second decimal are [[noise|sampling noise]]: another 1000 people would wobble a little.</p>
+      </div></div></div></li>
+    <li class="nd"><div class="node" style="--c:var(--orange)">
+      <div class="nhead"><span class="arr">▶</span>3️⃣ Later: the computer does it<span class="teaser">training 🤖</span></div>
+      <div class="nbody"><div class="ntext">
+        <p>Today <b>we</b> turned the knob <b>by hand</b>. Later in the course, the <b>computer</b> will do it by itself.</p>
+        <p>For every possible p, the computer asks: <i>"If my story is true with this p, how likely is the real data?"</i> Then it picks the p that makes the real data <b>most likely</b>. This is called [[mle|Maximum Likelihood]].</p>
+        <div class="key">When a computer finds the best parameters of a model from data, we call it [[train|training]]. So today, you trained a model by hand! 🎉</div>
+      </div></div></div></li>
+  </ul>
+</li>
+</ul></div>
+</section>
+
+<!-- ================= CHAPTER 6: THE PALPATINE PROBLEM ================= -->
+<section class="chapter" id="ch-palp">
+<div class="pp">
+  <div class="pphead">
+    <h2>👑 The Palpatine Problem, step by step</h2>
+    <p>Today's section problem. We only have <b>how many yeses</b> each of 1000 people said. How do we find the secret p from that? Click <b>Next ▶</b> and watch.</p>
+  </div>
+  <div class="stepper" id="pp-top">
+    <div class="stage" id="ppStage"></div>
+    <div class="stext">
+      <div class="sdots" id="ppDots"></div>
+      <div class="snum" id="ppNum"></div>
+      <h3 id="ppTitle"></h3>
+      <div id="ppText"></div>
+      <div class="snav"><button onclick="ppGo(PS-1)">◀ Back</button><button onclick="ppGo(PS)">🔁 Replay</button><button class="on" onclick="ppGo(PS+1)">Next ▶</button></div>
+    </div>
+  </div>
+
+  <h2 class="wh">🤔 Wait… why?</h2>
+  <p class="center small">The questions everybody asks after the section. Every card has its own animation.</p>
+  <div class="wait">
+
+    <!-- 1. two random variables -->
+    <div class="wcard" style="--c:var(--blue)">
+      <h3>1️⃣ Wait… why 2 random variables?</h3>
+      <div class="wstage" id="w1s" style="height:196px">
+        <div class="box1 boxH" id="w1H">😇 H ~ Bin(5, ½)<small>the chance ½ is known</small></div>
+        <div class="box1 boxS" id="w1S">🤫 S ~ Ber(p)<small>p = ?</small></div>
+        <div class="mc">Q1<b>½</b></div><div class="mc">Q2<b>½</b></div><div class="mc">Q3<b>½</b></div><div class="mc">Q4<b>½</b></div><div class="mc">Q5<b>½</b></div><div class="mc sec">Q6<b>p</b></div>
+      </div>
+      <button onclick="w1Pos(true)">📦 Sort the questions</button><button onclick="w1Pos(false)">Reset</button>
+      <p>The 6 questions are <b>not the same</b>: 5 have chance <b>½</b>, and 1 has chance <b>p</b>.</p>
+      <p>A binomial needs the <b>same chance</b> in every trial. So one Bin(6, ?) is wrong. We put each group in its <b>own</b> random variable.</p>
+      <div class="key">Bonus: now the unknown p sits <b>alone</b> in S. It is the only knob we turn. 🎛️</div>
+    </div>
+
+    <!-- 2. why sum -->
+    <div class="wcard" style="--c:var(--green)">
+      <h3>2️⃣ Wait… why do we add them?</h3>
+      <div class="wstage" id="w2s" style="height:150px">
+        <div class="w2lab" style="top:6px">😇 H: <span id="w2h">?</span></div>
+        <div class="w2lab" style="top:76px">🤫 S: <span id="w2sv">?</span></div>
+        <div class="w2box"><span>🗣️ what we hear</span><b id="w2tot"></b></div>
+      </div>
+      <button onclick="w2Play()">▶ Play (new person)</button>
+      <p>Because the person <b>adds them in their head</b> and tells us only the total. Our story must make data <b>the same way</b> the real people do: <code>answer = H + S</code>.</p>
+      <p>After adding, the colors are mixed: from one number you can't see which yes was the secret. <b>The sum is what hides the secret!</b> 🛡️</p>
+    </div>
+
+    <!-- 3. why 0 becomes 1 -->
+    <div class="wcard" style="--c:var(--orange)">
+      <h3>3️⃣ Wait… why does a 0 become 1?</h3>
+      <div class="wstage"><div class="chartwrap"><div id="w3b"></div></div>
+        <div class="legend">Blue = our story · <span class="dash"></span> = real data · orange = the moved zeros</div></div>
+      <button onclick="w3Apply()">▶ Apply the rule: 0 → 1</button><button onclick="w3Build()">Reset</button>
+      <p>Look at the real data: the bar at <b>0 is empty</b>. Why? Saying 0 means "all no", also the secret one. Palpatine would know you said "no" → 🪓! So people who had 0 say <b>1</b>.</p>
+      <p>Our story without the rule makes about <b>3%</b> zeros, a bar the real data doesn't have. 🚫 A story must make data <b>exactly the way</b> the real data was made, so we copy the rule: <code>if answer == 0: answer = 1</code></p>
+      <div class="ex" id="w3t" style="font-size:13px"></div>
+    </div>
+
+    <!-- 4. why minus 2.5 -->
+    <div class="wcard" style="--c:var(--red)">
+      <h3>4️⃣ Wait… why do we subtract 2.5? <span class="optb">⭐ Bonus</span></h3>
+      <div class="wstage"><div class="w4wrap" id="w4wrap"><div class="w4bar" id="w4bar"></div></div>
+        <div id="w4eq" class="small center" style="min-height:40px"></div></div>
+      <button onclick="w4Play()">▶ Build the average</button>
+      <p>This is the <b>math shortcut</b>, with no simulation. The average of a sum = the sum of the averages:</p>
+      <div class="formula" style="font-size:15px">E[H + S] = E[H] + E[S] = 5 · ½ + p = 2.5 + p</div>
+      <p>Each harmless question adds <b>½</b> to the average. Everybody gets these 2.5, so they tell us nothing. We <b>remove</b> them (and the tiny bit from the 0 → 1 rule), and <b>p is what's left!</b></p>
+    </div>
+
+    <!-- 5. why 1000 -->
+    <div class="wcard" style="--c:var(--purple)">
+      <h3>5️⃣ Wait… why 1000 fake people?</h3>
+      <div class="wstage">
+        <div class="center small">Fake people in one run:
+          <button class="w5n" data-n="10" onclick="w5Set(10)">10</button><button class="w5n" data-n="100" onclick="w5Set(100)">100</button><button class="w5n on" data-n="1000" onclick="w5Set(1000)">1000</button></div>
+        <div id="w5svg"></div>
+        <div id="w5t" class="small center"></div>
+      </div>
+      <button onclick="w5Run()">▶ Run the story 40 times</button>
+      <p>Every run gives a slightly <b>different</b> average (1 dot = 1 run). This is <b>sampling noise</b>.</p>
+      <p>👉 N = 10: the dots are everywhere. With 10 people, p = 0.09 and p = 0.3 look the same!<br>👉 N = 1000: the dots stay close together. Now the average really tells us p.</p>
+      <div class="key">The real data has <b>1000 people</b>. We make 1000 fake people too: same size, same amount of noise, bars you can compare. A fair comparison! ⚖️</div>
+    </div>
+
+    <!-- 6. why averages -->
+    <div class="wcard" style="--c:var(--teal)">
+      <h3>6️⃣ Wait… why compare the averages? <span class="optb">⭐ Bonus</span></h3>
+      <div class="wstage">
+        <div class="row center">p = <input type="range" id="w6p" min="0" max="0.5" step="0.01" value="0.3" oninput="w6Draw()"> <b id="w6pv"></b></div>
+        <div class="nline"><div class="ln"></div>
+          <div class="mk2" id="w6s" style="top:0;color:var(--blue)">story ▼</div>
+          <div class="mk2" id="w6r" style="top:34px;color:var(--red)">▲ real</div>
+          <div class="mk2" style="left:0%;top:48px;color:#889;font-weight:400">2.4</div><div class="mk2" style="left:28.6%;top:48px;color:#889;font-weight:400">2.6</div><div class="mk2" style="left:57.1%;top:48px;color:#889;font-weight:400">2.8</div><div class="mk2" style="left:85.7%;top:48px;color:#889;font-weight:400">3.0</div>
+        </div>
+        <div id="w6t" class="small center"></div>
+      </div>
+      <p>The normal way is to <b>look at the bars</b>. The averages are a <b>bonus</b>: more exact than our eyes. We have only <b>one knob</b> (p), so <b>one number</b> to match is enough.</p>
+      <p>And the average is a great number for this: turn p up by 0.1 → the average goes up by about 0.1. It moves <b>together</b> with p. 📈 That's why "too high → p down, too low → p up" works.</p>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<footer>Made for Probability for AI · Section 2 · Questions? Write them in the section forum 💬</footer>
+<div id="tip"></div>
+
+<script>
+// ================= GLOSSARY =================
+const G={
+ dotted:["Like this!","Words with a dotted line have a short explanation. You don't need to scroll back."],
+ rv:["Random variable","A number that comes from a random event. It has many possible values, and each value has a chance."],
+ outcome:["Outcome","One possible result of a random event. Example: HT (first coin heads, second tails)."],
+ omega:["Sample space Ω","The set of ALL possible outcomes. For 2 coins: {HH, HT, TH, TT}."],
+ event:["Event","A group of outcomes. Example: “X = 1” = {HT, TH}. Every event has a probability."],
+ prob:["Probability","A number from 0 to 1 that says how likely something is. 0 = never, 1 = always."],
+ discrete:["Discrete","Values you can COUNT, with gaps between them: 0, 1, 2, 3 …"],
+ continuous:["Continuous","Values you MEASURE. Any number in a range, like 172.31… cm."],
+ bern:["Bernoulli Ber(p)","ONE yes/no trial. X = 1 with chance p, X = 0 with chance 1 − p."],
+ bin:["Binomial Bin(n, p)","The number of yeses in n independent trials, each with the same chance p."],
+ pois:["Poisson Poi(λ)","Counts rare events in a time or space. It is an approximation of a binomial with big n and small p."],
+ param:["Parameter","A “knob” of a distribution or a model, like p, n or λ. Change it and the data changes."],
+ p:["p","The chance of “yes” (success) in one trial. A number from 0 to 1."],
+ n:["n","The number of trials."],
+ lambda:["λ (lambda)","The average number of events (Poisson). λ = n · p."],
+ trial:["Trial","One try of a random experiment, like one coin flip or one question."],
+ indep:["Independent","One result does not change the chance of another result."],
+ approx:["Approximation","A simpler formula that gives almost the same answer."],
+ func:["Function","A rule: a value goes in, another value comes out. Same input → always the same output."],
+ input:["Input","What goes INTO a function."],
+ output:["Output","What comes OUT of a function."],
+ pmf:["PMF","Probability Mass Function. For DISCRETE X. Input k → output P(X = k)."],
+ pdf:["PDF","Probability Density Function. For CONTINUOUS X. Probability = AREA under the curve."],
+ cdf:["CDF","Cumulative Distribution Function. F(x) = P(X ≤ x). Works for both discrete and continuous."],
+ density:["Density","The height of a PDF curve. It is NOT a probability. Only the area is a probability."],
+ ev:["Expected value E[X]","The long-run average of X. A weighted average: Σ value × chance."],
+ wavg:["Weighted average","Each value is multiplied by its weight (here: its chance), and then we add everything."],
+ var:["Variance Var(X)","How spread out the values are: the average squared distance from the mean."],
+ sd:["Standard deviation σ","σ = √Var. The spread in the same units as X."],
+ mean:["Mean μ","Another name for the expected value (the average)."],
+ model:["Probabilistic model","A story with random variables that makes data."],
+ sim:["Simulation","Running the story on a computer many times to make fake data."],
+ fact:["k! (factorial)","1 · 2 · 3 · … · k. Example: 4! = 24. And 0! = 1."],
+ comb:["C(n, k)","The number of ways to choose k things from n things. Example: C(5, 2) = 10."],
+ e:["e ≈ 2.718","A special number in math, like π."],
+ noise:["Sampling noise","Small random differences, because we only have a limited number of samples."],
+ mle:["Maximum Likelihood","The computer picks the parameters that make the real data most likely."],
+ train:["Training","Finding the best parameters of a model from data."]
+};
+document.querySelectorAll('.chapter').forEach(el=>{
+  el.innerHTML=el.innerHTML.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,t)=>'<span class="t" data-k="'+k+'">'+t+'</span>');
+});
+const tip=document.getElementById('tip');
+function moveTip(e){let x=e.clientX+14,y=e.clientY+16;const w=tip.offsetWidth,h=tip.offsetHeight;if(x+w>innerWidth-8)x=innerWidth-w-8;if(y+h>innerHeight-8)y=e.clientY-h-12;tip.style.left=x+'px';tip.style.top=y+'px';}
+document.addEventListener('mouseover',e=>{const t=e.target.closest('.t');if(!t)return;const g=G[t.dataset.k];if(!g)return;tip.innerHTML='<b>'+g[0]+'</b><br>'+g[1];tip.style.display='block';moveTip(e);});
+document.addEventListener('mousemove',e=>{if(tip.style.display==='block')moveTip(e);});
+document.addEventListener('mouseout',e=>{if(e.target.closest('.t'))tip.style.display='none';});
+
+// ================= TREE / NAVIGATION =================
+const $=s=>document.querySelector(s);
+document.addEventListener('click',e=>{
+  const h=e.target.closest('.nhead');
+  if(h){const li=h.closest('li.nd');li.classList.toggle('open');h.parentElement.classList.remove('pulse');
+    if(li.classList.contains('open'))setTimeout(()=>h.parentElement.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),60);return;}
+  const c=e.target.closest('.chap');if(c){showChapter(c.dataset.ch);return;}
+  const j=e.target.closest('[data-jump]');if(j){jump(j.dataset.jump);}
+});
+function showChapter(id){document.querySelectorAll('.chapter').forEach(s=>s.classList.toggle('show',s.id==='ch-'+id));document.querySelectorAll('.chap').forEach(c=>c.classList.toggle('active',c.dataset.ch===id));
+  if(id==='palp'){ppGo(PS);if(!PP_SEEN){PP_SEEN=true;w1Pos(false);w2Play();w4Play();w5Run();}}}
+function jump(t){const [ch,node]=t.split(':');showChapter(ch);const el=document.getElementById(node);if(!el)return;let li=el.closest('li.nd');while(li){li.classList.add('open');li=li.parentElement.closest('li.nd');}
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),100);el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600);}
+function openAll(ch,v){document.querySelectorAll('#ch-'+ch+' li.nd').forEach(li=>li.classList.toggle('open',v));}
+
+// ================= MATH HELPERS =================
+function comb(n,k){if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
+function binPmf(n,p,k){return comb(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);}
+function fact(k){let r=1;for(let i=2;i<=k;i++)r*=i;return r;}
+function poiPmf(l,k){return Math.pow(l,k)*Math.exp(-l)/fact(k);}
+function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function normCdf(x,m,s){return 0.5*(1+erf((x-m)/(s*Math.SQRT2)));}
+function sum(a){return a.reduce((x,y)=>x+y,0);}
+function bars(el,vals,labels,o){o=o||{};const outl=o.outline||null;
+  const mx=o.max||Math.max(1e-9,...vals,...(outl||[]));
+  let h='<div class="bars" style="height:'+(o.h||130)+'px">';
+  vals.forEach((v,i)=>{const hl=o.hl&&o.hl(i);
+    h+='<div class="bcol" title="'+labels[i]+': '+(+v).toFixed(3)+'"><div class="bv">'+(o.top?o.top(v,i):'')+'</div><div class="bwrap"><div class="bar'+(hl?' hl':'')+'" style="height:'+Math.min(100,v/mx*100)+'%;'+(o.color&&!hl?'background:'+o.color:'')+'"></div>'+(outl?'<div class="bout" style="height:'+Math.min(100,outl[i]/mx*100)+'%"></div>':'')+'</div><div class="bl">'+labels[i]+'</div></div>';});
+  el.innerHTML=h+'</div>';}
+
+// ================= 1. COINS =================
+const CO={c:[0,0,0],t:0};
+function flipCoins(times){let a,b;for(let i=0;i<times;i++){a=Math.random()<.5?'H':'T';b=Math.random()<.5?'H':'T';CO.c[(a==='H')+(b==='H')]++;CO.t++;}
+  const c1=$('#c1'),c2=$('#c2');
+  if(times===1){[c1,c2].forEach(c=>{c.classList.remove('spin');void c.offsetWidth;c.classList.add('spin');c.textContent='';});setTimeout(()=>showCoins(a,b),620);}else showCoins(a,b);}
+function showCoins(a,b){const c1=$('#c1'),c2=$('#c2');c1.textContent=a;c2.textContent=b;c1.className='coin '+a;c2.className='coin '+b;const x=(a==='H')+(b==='H');
+  document.querySelectorAll('.om').forEach(o=>o.classList.toggle('on',o.dataset.o===a+b));
+  document.querySelectorAll('.omx').forEach(o=>o.classList.toggle('on',+o.dataset.x===x));
+  $('#coinOut').innerHTML='Outcome: <b>'+a+b+'</b> → X = <b>'+x+'</b> head'+(x===1?'':'s');drawCoinBars(x);}
+function drawCoinBars(x){const f=CO.c.map(v=>CO.t?v/CO.t:0);bars($('#coinBars'),f,['X=0','X=1','X=2'],{max:.75,outline:[.25,.5,.25],hl:i=>i===x,top:(v,i)=>CO.c[i]});$('#coinN').textContent=CO.t;}
+function resetCoins(){CO.c=[0,0,0];CO.t=0;$('#c1').textContent='?';$('#c2').textContent='?';$('#c1').className='coin';$('#c2').className='coin';$('#coinOut').innerHTML='Click "Flip"!';document.querySelectorAll('.om,.omx').forEach(o=>o.classList.remove('on'));drawCoinBars(-1);}
+
+// ================= DIE =================
+const FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+function rollDie(){const d=$('#die');const v=1+Math.floor(Math.random()*6);d.classList.remove('spin');void d.offsetWidth;d.classList.add('spin');
+  setTimeout(()=>{d.textContent=FACES[v-1];document.querySelectorAll('.nl span').forEach(s=>s.classList.toggle('on',+s.dataset.v===v));$('#dieTxt').innerHTML='X = <b>'+v+'</b>. Possible values: 1, 2, 3, 4, 5, 6. Never 3.5!';},450);}
+
+// ================= RULER (continuous) =================
+let rL=0;const TARGET=172.31111111;
+function zoom(d){rL=Math.max(0,Math.min(6,rL+d));drawRuler();}
+function drawRuler(){const step=Math.pow(10,-rL),span=10*step,start=Math.floor(TARGET/span+1e-9)*span;const X0=30,X1=310,dx=(X1-X0)/10;
+  let s='<svg viewBox="0 0 340 82" width="100%"><line x1="'+X0+'" y1="42" x2="'+X1+'" y2="42" stroke="#333" stroke-width="2"/>';
+  for(let i=0;i<=10;i++){const x=X0+i*dx,big=(i%5===0);s+='<line x1="'+x+'" y1="'+(big?26:33)+'" x2="'+x+'" y2="42" stroke="#333" stroke-width="'+(big?2:1)+'"/>';
+    if(big)s+='<text x="'+x+'" y="19" font-size="10" text-anchor="middle">'+(start+i*step).toFixed(rL)+'</text>';}
+  const mx=X0+(TARGET-start)/span*(X1-X0);
+  s+='<polygon points="'+(mx-7)+',60 '+(mx+7)+',60 '+mx+',45" fill="#c0392b"/><text x="'+mx+'" y="75" font-size="10" text-anchor="middle" fill="#c0392b">your height</text></svg>';
+  $('#ruler').innerHTML=s;$('#rulerTxt').innerHTML='Zoom ×'+Math.pow(10,rL).toLocaleString('en-US')+': height ≈ <b>'+TARGET.toFixed(rL+1)+'…</b> cm';}
+
+// ================= BERNOULLI =================
+const BE={c:[0,0]};
+function bpv(){return +$('#bp').value;}
+function bernTry(times){const p=bpv();let last=0;for(let i=0;i<times;i++){last=Math.random()<p?1:0;BE.c[last]++;}const ic=$('#bIcon');ic.classList.remove('pop');void ic.offsetWidth;ic.classList.add('pop');ic.textContent=last?'🌧️':'☀️';
+  $('#bRes').innerHTML=(times>1?'Last day: ':'')+(last?'X = <b>1</b> (yes, rain)':'X = <b>0</b> (no rain)');drawBern(last);}
+function drawBern(h){const t=BE.c[0]+BE.c[1],p=bpv();bars($('#bBars'),BE.c.map(v=>t?v/t:0),['0 (no)','1 (yes)'],{max:1,outline:[1-p,p],hl:i=>i===h,top:(v,i)=>BE.c[i],h:110});$('#bpv').textContent=p.toFixed(2);$('#bN').textContent=t;}
+function bernReset(){BE.c=[0,0];$('#bIcon').textContent='❔';$('#bRes').innerHTML='Click "Try one day".';drawBern(-1);}
+
+// ================= BINOMIAL =================
+const BI={c:[],busy:false};
+function bnv(){return +$('#bn').value;} function bppv(){return +$('#bpp').value;}
+function binReset(){if(BI.busy)return;BI.c=new Array(bnv()+1).fill(0);$('#bnv').textContent=bnv();$('#bppv').textContent=bppv().toFixed(2);
+  let q='';for(let i=0;i<bnv();i++)q+='<span class="q">Q'+(i+1)+'</span>';$('#qs').innerHTML=q;$('#binRes').innerHTML='Click "One person".';drawBin(-1);}
+function drawBin(h){const n=bnv(),p=bppv(),t=sum(BI.c);const ex=BI.c.map((_,k)=>binPmf(n,p,k));const fr=BI.c.map(v=>t?v/t:0);
+  bars($('#binBars'),fr,BI.c.map((_,k)=>k),{outline:ex,max:Math.max(...ex,...fr)*1.1,hl:i=>i===h,h:110});$('#binN').textContent=t;}
+function binOne(){if(BI.busy)return;BI.busy=true;const n=bnv(),p=bppv();const qs=document.querySelectorAll('#qs .q');let x=0;
+  qs.forEach((q,i)=>{q.className='q';q.textContent='?';});
+  qs.forEach((q,i)=>setTimeout(()=>{const y=Math.random()<p;x+=y?1:0;q.className='q '+(y?'yes':'no');q.textContent=y?'✔':'✘';
+    if(i===n-1){BI.c[x]++;$('#binRes').innerHTML='This person: X = <b>'+x+'</b> yes out of '+n;drawBin(x);BI.busy=false;}else $('#binRes').innerHTML='Yes so far: <b>'+x+'</b>';},230*(i+1)));}
+function binMany(m){if(BI.busy)return;const n=bnv(),p=bppv();for(let j=0;j<m;j++){let x=0;for(let i=0;i<n;i++)x+=Math.random()<p?1:0;BI.c[x]++;}$('#binRes').innerHTML='Added '+m+' people.';drawBin(-1);}
+
+// ================= POISSON =================
+const PN=600,K=12;const PO={c:new Array(K+1).fill(0),busy:false};
+function plv(){return +$('#pl').value;}
+function poiReset(){if(PO.busy)return;PO.c.fill(0);$('#plv').textContent=plv();$('#pp').textContent=(plv()/PN).toFixed(4);$('#tl').innerHTML='';$('#poiRes').innerHTML='Click "Run one hour".';drawPoi(-1);}
+function drawPoi(h){const l=plv(),t=sum(PO.c);const ex=[];for(let k=0;k<K;k++)ex.push(binPmf(PN,l/PN,k));ex.push(Math.max(0,1-sum(ex)));
+  const fr=PO.c.map(v=>t?v/t:0);bars($('#poiBars'),fr,PO.c.map((_,k)=>k<K?k:K+'+'),{outline:ex,max:Math.max(...ex,...fr)*1.1,hl:i=>i===h,h:105});$('#poiN').textContent=t;}
+function poiHour(){if(PO.busy)return;PO.busy=true;const p=plv()/PN,tl=$('#tl');tl.innerHTML='<div class="cursor"></div>';let x=0;
+  for(let s=0;s<PN;s++){if(Math.random()<p){x++;const d=document.createElement('span');d.className='edot';d.style.left=(s/PN*100)+'%';d.style.animationDelay=(s/PN*1.5)+'s';tl.appendChild(d);}}
+  $('#poiRes').innerHTML='⏳ The hour is running…';
+  setTimeout(()=>{PO.c[Math.min(x,K)]++;$('#poiRes').innerHTML='This hour: X = <b>'+x+'</b> email'+(x===1?'':'s');drawPoi(Math.min(x,K));PO.busy=false;},1600);}
+function poiMany(m){if(PO.busy)return;const p=plv()/PN;for(let j=0;j<m;j++){let x=0;for(let s=0;s<PN;s++)if(Math.random()<p)x++;PO.c[Math.min(x,K)]++;}$('#poiRes').innerHTML='Added '+m+' hours.';drawPoi(-1);}
+
+// ================= FUNCTION MACHINE =================
+const MODES={
+ kitchen:{rule:'🍳 kitchen rule',items:[['🍎','🥧'],['🍓','🍰'],['🍋','🍹'],['🥛','🧀']],note:'Input: food → Output: new food. The same input always gives the same output.'},
+ lin:{rule:'f(x) = 2x + 1',items:[[0,1],[1,3],[3,7],[5,11]],note:'A <b>linear</b> function: a number goes in, a number comes out.'},
+ log:{rule:'f(x) = log₁₀(x)',items:[[1,0],[10,1],[100,2],[1000,3]],note:'A <b>logarithmic</b> function: "how many times do we multiply 10 to get x?"'},
+ pmf:{rule:'P(X = k)<br><small>2 coins, X = heads</small>',items:[[0,0.25],[1,0.5],[2,0.25],[3,0]],note:'A <b>PMF</b>! Input: a value k → Output: its probability. The output is always between 0 and 1, and all outputs add up to 1. (k = 3 is impossible, so its chance is 0.)'}
+};
+let MODE='kitchen';
+function setMode(m){MODE=m;document.querySelectorAll('.mbtn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));$('#mRule').innerHTML=MODES[m].rule;
+  $('#mInputs').innerHTML=MODES[m].items.map((it,i)=>'<button onclick="feed('+i+')">'+(m==='pmf'?'k = ':m==='kitchen'?'':'x = ')+it[0]+'</button>').join('');
+  $('#mNote').innerHTML=MODES[m].note;$('#mIn').textContent='?';$('#mOut').textContent='?';$('#mOut').classList.remove('show');}
+function feed(i){const it=MODES[MODE].items[i];const a=$('#mIn'),mc=$('#machine'),o=$('#mOut');a.textContent=it[0];a.classList.remove('go');o.classList.remove('show');o.textContent='…';
+  void a.offsetWidth;a.classList.add('go');mc.classList.remove('busy');void mc.offsetWidth;mc.classList.add('busy');
+  setTimeout(()=>{mc.classList.remove('busy');o.textContent=it[1];o.classList.add('show');a.classList.remove('go');},950);}
+
+// ================= PMF CHOOSER =================
+function pmfDraw(){const d=$('#pmfD').value,p=+$('#pmfP').value,n=+$('#pmfN').value,l=+$('#pmfL').value;
+  $('#rowP').style.display=d==='poi'?'none':'';$('#rowN').style.display=d==='bin'?'':'none';$('#rowL').style.display=d==='poi'?'':'none';
+  $('#pmfPv').textContent=p.toFixed(2);$('#pmfNv').textContent=n;$('#pmfLv').textContent=l;
+  let ks,vals,f;
+  if(d==='bern'){ks=[0,1];vals=[1-p,p];f='P(X = 1) = '+p.toFixed(2)+' &nbsp; P(X = 0) = '+(1-p).toFixed(2);}
+  else if(d==='bin'){ks=[...Array(n+1).keys()];vals=ks.map(k=>binPmf(n,p,k));f='P(X = k) = C('+n+', k) · '+p.toFixed(2)+'<sup>k</sup> · '+(1-p).toFixed(2)+'<sup>'+n+' − k</sup>';}
+  else{ks=[...Array(13).keys()];vals=ks.map(k=>poiPmf(l,k));f='P(X = k) = '+l+'<sup>k</sup> · e<sup>−'+l+'</sup> / k!';}
+  $('#pmfF').innerHTML=f;
+  $('#pmfT').innerHTML='<table class="mini"><tr><th>k</th>'+ks.map(k=>'<td>'+k+'</td>').join('')+'</tr><tr><th>P</th>'+vals.map(v=>'<td>'+v.toFixed(3)+'</td>').join('')+'</tr></table>';
+  bars($('#pmfB'),vals,ks,{h:110});$('#pmfS').textContent=sum(vals).toFixed(3)+(d==='poi'?' (we only show k = 0…12)':'');}
+
+// ================= BINOMIAL CALCULATOR =================
+function binCalc(){const n=Math.max(1,Math.round(+$('#cn').value||1)),p=Math.min(1,Math.max(0,+$('#cp').value)),k=Math.min(Math.max(0,Math.round(+$('#ck').value)),n);
+  $('#cOut').innerHTML='C('+n+', '+k+') = '+Math.round(comb(n,k)).toLocaleString('en-US')+'<br>p<sup>k</sup> = '+p+'<sup>'+k+'</sup> = '+Math.pow(p,k).toPrecision(4)+'<br>(1 − p)<sup>n − k</sup> = '+(1-p).toFixed(2)+'<sup>'+(n-k)+'</sup> = '+Math.pow(1-p,n-k).toPrecision(4)+'<br>Multiply them: <b>P(X = '+k+') = '+binPmf(n,p,k).toPrecision(4)+'</b>';}
+
+// ================= POISSON COMPARE + HARD WAY =================
+function poiCmp(){const n=+$('#pcN').value,l=2,ks=[...Array(9).keys()];const b=ks.map(k=>binPmf(n,l/n,k)),q=ks.map(k=>poiPmf(l,k));
+  bars($('#pcB'),b,ks,{outline:q,h:110});$('#pcPv').textContent=(l/n).toFixed(4);$('#pcD').textContent=Math.max(...ks.map(k=>Math.abs(b[k]-q[k]))).toFixed(4);}
+function hardWay(){const n=1000,p=0.009,k=5,l=n*p;
+  $('#hw').innerHTML='<b>Binomial (n = 1000, p = 0.009, k = 5):</b><br>C(1000, 5) = '+Math.round(comb(n,k)).toLocaleString('en-US')+' 😱 (a huge number!)<br>0.009<sup>5</sup> = '+Math.pow(p,k).toExponential(4)+' (a tiny number!)<br>0.991<sup>995</sup> = '+Math.pow(1-p,n-k).toExponential(4)+'<br>huge × tiny × tiny → P(X = 5) = <b>'+binPmf(n,p,k).toFixed(5)+'</b><br><br><b>Poisson (λ = n · p = 9):</b><br>9<sup>5</sup> · e<sup>−9</sup> / 5! = 59049 · '+Math.exp(-9).toExponential(4)+' / 120<br>→ P(X = 5) ≈ <b>'+poiPmf(l,k).toFixed(5)+'</b><br>Almost the same, and much easier! 🎉';
+  let t='<div class="two"><table class="mini"><tr><th>n</th><th>(1 − 2/n)<sup>n</sup></th></tr>';[10,100,1000,10000,100000].forEach(m=>{t+='<tr><td>'+m.toLocaleString('en-US')+'</td><td>'+Math.pow(1-2/m,m).toFixed(5)+'</td></tr>';});
+  t+='<tr><th>e<sup>−2</sup></th><th>'+Math.exp(-2).toFixed(5)+'</th></tr></table><table class="mini"><tr><th>n</th><th>n(n−1)…(n−4) / n<sup>5</sup></th></tr>';
+  [10,100,1000,10000].forEach(m=>{let r=1;for(let i=0;i<5;i++)r*=(m-i)/m;t+='<tr><td>'+m.toLocaleString('en-US')+'</td><td>'+r.toFixed(5)+'</td></tr>';});
+  t+='<tr><th>→</th><th>1</th></tr></table></div><p class="small">Make n bigger: the left table goes to e<sup>−λ</sup>, the right table goes to 1.</p>';$('#eTab').innerHTML=t;}
+
+// ================= PDF =================
+function pdfDraw(){let a=+$('#pa').value,b=+$('#pb').value;if(a>b){const z=a;a=b;b=z;}const m=170,s=7,W=340,H=150,x0=145,x1=195;
+  const X=x=>10+(x-x0)/(x1-x0)*(W-20),f=x=>Math.exp(-(x-m)*(x-m)/(2*s*s))/(s*Math.sqrt(2*Math.PI)),Y=y=>H-25-y/0.06*(H-40);
+  let path='';for(let x=x0;x<=x1;x+=0.5)path+=(x===x0?'M':'L')+X(x).toFixed(1)+','+Y(f(x)).toFixed(1);
+  let area='M'+X(a).toFixed(1)+','+Y(0).toFixed(1);for(let x=a;x<=b+1e-9;x+=0.25)area+='L'+X(x).toFixed(1)+','+Y(f(x)).toFixed(1);area+='L'+X(b).toFixed(1)+','+Y(0).toFixed(1)+'Z';
+  let ticks='';for(let t=150;t<=190;t+=10)ticks+='<text x="'+X(t)+'" y="'+(H-8)+'" font-size="10" text-anchor="middle">'+t+'</text>';
+  $('#pdfSvg').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="100%"><path d="'+area+'" fill="#f5a623" opacity=".75"/><path d="'+path+'" fill="none" stroke="#2e6da4" stroke-width="2.5"/><line x1="10" y1="'+Y(0)+'" x2="'+(W-10)+'" y2="'+Y(0)+'" stroke="#555"/>'+ticks+'</svg>';
+  $('#pdfTxt').innerHTML='P('+a+' ≤ height ≤ '+b+') = orange area ≈ <b>'+(normCdf(b,m,s)-normCdf(a,m,s)).toFixed(3)+'</b>'+(a===b?'<br>A single line has no area → chance of one exact value = 0!':'');}
+
+// ================= CDF =================
+function cdfDraw(){const x=+$('#cx').value,cnt=Math.max(0,Math.min(6,Math.floor(x))),F=cnt/6;$('#cxv').textContent=x.toFixed(1);
+  bars($('#cdfB'),[1,2,3,4,5,6].map(()=>1/6),[1,2,3,4,5,6],{max:0.2,hl:i=>i+1<=x,h:70});
+  const W=340,H=130,X=v=>30+v/7*(W-40),Y=v=>H-20-v*(H-35);let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%">';
+  s+='<line x1="30" y1="'+Y(0)+'" x2="'+(W-8)+'" y2="'+Y(0)+'" stroke="#555"/><line x1="30" y1="'+Y(0)+'" x2="30" y2="8" stroke="#555"/>';
+  for(let i=0;i<=7;i++)s+='<text x="'+X(i)+'" y="'+(H-5)+'" font-size="10" text-anchor="middle">'+i+'</text>';
+  s+='<text x="25" y="'+(Y(1)+4)+'" font-size="10" text-anchor="end">1</text><text x="25" y="'+(Y(0.5)+4)+'" font-size="10" text-anchor="end">0.5</text>';
+  for(let i=0;i<=6;i++){s+='<line x1="'+X(i)+'" y1="'+Y(i/6)+'" x2="'+X(i===6?7:i+1)+'" y2="'+Y(i/6)+'" stroke="#2e6da4" stroke-width="3"/>';if(i>0)s+='<circle cx="'+X(i)+'" cy="'+Y(i/6)+'" r="4" fill="#2e6da4"/>';}
+  s+='<line x1="'+X(x)+'" y1="'+Y(0)+'" x2="'+X(x)+'" y2="'+Y(F)+'" stroke="#c0392b" stroke-dasharray="4"/><circle cx="'+X(x)+'" cy="'+Y(F)+'" r="6" fill="#c0392b"/></svg>';
+  $('#cdfSvg').innerHTML=s;$('#cdfTxt').innerHTML='F('+x.toFixed(1)+') = P(X ≤ '+x.toFixed(1)+') = '+(cnt?'orange bars = '+cnt+' × 1/6 = ':'')+'<b>'+F.toFixed(3)+'</b><br>The staircase jumps up at every value.';}
+
+// ================= EXPECTED VALUE =================
+function evDraw(){const q=+$('#eq').value,P=[1,2,3,4,5].map(()=>(1-q)/5).concat([q]);const E=sum(P.map((p,i)=>(i+1)*p));
+  bars($('#evB'),P,[1,2,3,4,5,6],{max:1,h:120,top:v=>v.toFixed(2)});$('#fulcrum').style.left=((E-0.5)/6*100)+'%';$('#evE').textContent=E.toFixed(2);$('#eqv').textContent=q.toFixed(2);
+  $('#evCalc').innerHTML='E[X] = '+P.map((p,i)=>(i+1)+'·'+p.toFixed(2)).join(' + ')+' = <b>'+E.toFixed(2)+'</b>'+(Math.abs(q-1/6)<0.01?'<br>A fair die: E = 3.5 (the normal average)':'<br>6 has more weight, so the balance point moves right →');}
+const RA={s:0,n:0};
+function raRoll(m){for(let i=0;i<m;i++){RA.s+=1+Math.floor(Math.random()*6);RA.n++;}const a=RA.s/RA.n;$('#raTxt').innerHTML='Rolls: <b>'+RA.n+'</b> · Average: <b>'+a.toFixed(3)+'</b> (E[X] = 3.5)';$('#raBar').style.left=((a-1)/5*100)+'%';}
+function raReset(){RA.s=0;RA.n=0;$('#raTxt').innerHTML='The average moves closer to 3.5 when you roll more.';$('#raBar').style.left='50%';}
+
+// ================= VARIANCE =================
+function varDraw(){const d=+$('#vd').value,P=new Array(11).fill(0);if(d===0)P[5]=1;else{P[5-d]=.5;P[5+d]=.5;}
+  bars($('#varB'),P,[...Array(11).keys()],{max:1,h:110,hl:i=>P[i]>0});const c=v=>((v+0.5)/11*100);
+  $('#sdBr').style.left=c(5-d)+'%';$('#sdBr').style.width=(c(5+d)-c(5-d))+'%';$('#meanMk').style.left=c(5)+'%';$('#vdv').textContent=d;
+  $('#varTxt').innerHTML='Mean = <b>5</b> (always!) · Var = '+d+'² = <b>'+(d*d)+'</b> · SD = √'+(d*d)+' = <b>'+d+'</b>';}
+
+// ================= PALPATINE MODEL =================
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function pollAnswer(p,r,fix){let h=0;for(let i=0;i<5;i++)h+=r()<.5?1:0;const s=r()<p?1:0;let a=h+s;if(fix&&a===0)a=1;return a;}
+const REAL=(function(){const r=mulberry32(2129),c=new Array(7).fill(0);let t=0;for(let i=0;i<1000;i++){const a=pollAnswer(.09,r,true);c[a]++;t+=a;}return{c:c,mean:t/1000};})();
+function modelRun(){const p=+$('#mp').value,fix=$('#mfix').checked,c=new Array(7).fill(0);let t=0;const rnd=()=>Math.random();
+  for(let i=0;i<1000;i++){const a=pollAnswer(p,rnd,fix);c[a]++;t+=a;}const L=[0,1,2,3,4,5,6],mx=Math.max(...c,...REAL.c)/1000*1.1;
+  bars($('#realB'),REAL.c.map(v=>v/1000),L,{max:mx,h:110,top:(v,i)=>REAL.c[i],color:'#7f8c8d'});
+  bars($('#modB'),c.map(v=>v/1000),L,{max:mx,h:110,top:(v,i)=>c[i]});
+  const m=t/1000,d=m-REAL.mean;$('#realM').textContent=REAL.mean.toFixed(3);$('#modM').textContent=m.toFixed(3);$('#mpv').textContent=p.toFixed(2);
+  let h=Math.abs(d)<0.03?'🎯 Very close! The two averages match. So about '+Math.round(p*100)+' people in 100 support Palpatine.':(d>0?'⬇️ Our average is too high → move p down.':'⬆️ Our average is too low → move p up.');
+  if(!fix&&c[0]>0)h+='<br>👀 Read the two charts bar by bar, from the left. What is different at 0?';$('#mHint').innerHTML=h;}
+
+// ================= COFFEE =================
+function coffeeRun(){const p=+$('#cfp').value,q=+$('#cfq').value;let co=0,ca=0;for(let i=0;i<1000;i++){const c=Math.random()<p;const k=c&&Math.random()<q;co+=c?1:0;ca+=k?1:0;}
+  $('#cfpv').textContent=p.toFixed(2);$('#cfqv').textContent=q.toFixed(2);
+  $('#cfOut').innerHTML='☕ Coffees: <b>'+co+'</b> (the story says about '+Math.round(1000*p)+')<br>🍰 Cakes: <b>'+ca+'</b> (the story says about '+Math.round(1000*p*q)+')<br><span class="small">Run again: the numbers wobble a little. That is sampling noise.</span>';}
+
+// ================= 6. PALPATINE PROBLEM =================
+const REAL_LIST=(function(){const r=mulberry32(2129),L=[];for(let i=0;i<1000;i++)L.push(pollAnswer(.09,r,true));return L;})();
+// exact chances of answer = H + S, H ~ Bin(5, 1/2), S ~ Ber(p)
+function ansPmf(p,fix){const P=[];for(let k=0;k<=6;k++)P.push((k<=5?binPmf(5,.5,k):0)*(1-p)+(k>=1?binPmf(5,.5,k-1):0)*p);if(fix){P[1]+=P[0];P[0]=0;}return P;}
+// E[answer] = 2.5 + p + (1 - p)/32  →  solve for p
+const P_EST=(REAL.mean-2.5-1/32)/(31/32);
+let PS=0,PRUN=0,PP_SEEN=false;
+function later(f,ms){const id=PRUN;setTimeout(()=>{if(id===PRUN)f();},ms);}
+function popEl(sel){const e=$(sel);e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop');}
+function qcard(lbl,cls){return '<div class="qc '+(cls||'')+'"><small>'+lbl+'</small><b>?</b></div>';}
+function sixCards(){let h='';for(let i=0;i<5;i++)h+=qcard('Q'+(i+1)+' 😇');return h+qcard('Q6 🤫','sec');}
+function setCard(el,yes){el.classList.remove('flip','yes','no');void el.offsetWidth;el.classList.add('flip',yes?'yes':'no');el.querySelector('b').textContent=yes?'✔':'✘';}
+function s6P(){$('#s6pv').textContent=(+$('#s6p').value).toFixed(2);}
+function s6Run(){PRUN++;const p=+$('#s6p').value,c=new Array(7).fill(0),L=[0,1,2,3,4,5,6],ex=REAL.c.map(v=>v/1000),mx=Math.max(...ex)*1.3;let i=0,t=0;
+  $('#s6h').innerHTML='⏳ Making fake people…';
+  const tick=()=>{for(let j=0;j<50;j++){const a=pollAnswer(p,Math.random,true);c[a]++;t+=a;}i+=50;
+    bars($('#s6b'),c.map(v=>v/1000),L,{outline:ex,max:mx,h:130,top:(v,k)=>c[k]});
+    if(i<1000){later(tick,50);return;}
+    const d=t/1000-REAL.mean;$('#s6h').innerHTML=Math.abs(d)<0.04?'🎯 The blue bars sit on the dashes! p = '+p.toFixed(2)+' is a good guess.':(d>0?'👉 The blue bars lean to the <b>right</b> of the dashes (too many big answers) → try a smaller p.':'👈 The blue bars lean to the <b>left</b> of the dashes (too few big answers) → try a bigger p.');};
+  tick();}
+function s7Svg(dots,done){const W=340,H=230,X=p=>42+p/0.5*(W-60),Y=v=>H-32-(v-2.4)/0.7*(H-52);let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%">';
+  s+='<line x1="42" y1="'+(H-32)+'" x2="'+(W-14)+'" y2="'+(H-32)+'" stroke="#555"/><line x1="42" y1="'+(H-32)+'" x2="42" y2="12" stroke="#555"/>';
+  for(let p=0;p<=0.5001;p+=0.1)s+='<text x="'+X(p)+'" y="'+(H-18)+'" font-size="10" text-anchor="middle">'+p.toFixed(1)+'</text>';
+  for(let v=2.4;v<=3.1001;v+=0.2)s+='<text x="36" y="'+(Y(v)+3)+'" font-size="10" text-anchor="end">'+v.toFixed(1)+'</text>';
+  s+='<text x="'+(W/2+14)+'" y="'+(H-3)+'" font-size="10.5" text-anchor="middle" fill="#556">p (our guess) →</text><text x="11" y="'+(H/2-16)+'" font-size="10.5" fill="#556" transform="rotate(-90 11 '+(H/2-16)+')" text-anchor="middle">fake average</text>';
+  s+='<line x1="42" y1="'+Y(REAL.mean)+'" x2="'+(W-14)+'" y2="'+Y(REAL.mean)+'" stroke="#c0392b" stroke-width="2" stroke-dasharray="6 4"/><text x="'+(W-16)+'" y="'+(Y(REAL.mean)-6)+'" font-size="10.5" fill="#c0392b" text-anchor="end">real average '+REAL.mean.toFixed(3)+'</text>';
+  dots.forEach(d=>{s+='<circle cx="'+X(d[0])+'" cy="'+Y(d[1])+'" r="3.5" fill="#2e6da4"/>';});
+  if(done)s+='<line x1="'+X(0)+'" y1="'+Y(2.5+1/32)+'" x2="'+X(.5)+'" y2="'+Y(3+.5/32)+'" stroke="#2e6da4" stroke-width="1.5" opacity=".5"/><line x1="'+X(P_EST)+'" y1="'+Y(REAL.mean)+'" x2="'+X(P_EST)+'" y2="'+(H-32)+'" stroke="#b8860b" stroke-width="2" stroke-dasharray="3 3"/><circle cx="'+X(P_EST)+'" cy="'+Y(REAL.mean)+'" r="7" fill="none" stroke="#b8860b" stroke-width="3"/><text x="'+(X(P_EST)+8)+'" y="'+(Y(REAL.mean)+22)+'" font-size="12" font-weight="700" fill="#b8860b">p ≈ '+P_EST.toFixed(2)+' 🎯</text>';
+  return s+'</svg>';}
+
+const STEPS=[
+ {t:'The problem: people lie 🤥',
+  x:'<p>Palpatine wants to know: <b>what part of the people secretly support him?</b> We call this number <b>p</b>.</p><p>If we ask directly, people are afraid: whoever says <b>"No"</b> loses their head! 🪓 So <b>everybody</b> says "Yes!", even people who don\'t support him. The answers are <b>not honest</b>, and we learn nothing.</p><div class="ex">We need a way to ask where a <b>"no" can\'t be caught</b>. 🕵️</div>',
+  s:'<div class="center"><div class="bubble">👑 "Do you support Palpatine?"</div></div><div class="center bigface" id="s1p">🙂</div><div class="center" id="s1a" style="min-height:40px"></div><div class="center" id="s1b" style="min-height:44px"></div><div class="center small" id="s1c"></div>',
+  a(){later(()=>{$('#s1p').textContent='😰';},900);later(()=>{$('#s1a').innerHTML='<div class="bubble">"Yes! Of course! 😅"</div>';},1700);
+    later(()=>{$('#s1b').innerHTML='<div class="secret pop">🤫 But in secret: NO</div>';},2700);later(()=>{$('#s1c').innerHTML='<div class="stop pop">🪓 "No" = danger → everybody says "Yes" → useless data</div>';},3700);}},
+ {t:'The trick: hide the secret in a crowd 🎭',
+  x:'<p>Every person answers <b>6 questions</b> in their head:</p><ul><li><b>5 harmless</b> questions 😇, like "Flip a coin. Was it heads?" → yes with chance <b>½</b></li><li><b>1 secret</b> question 🤫: "Do you support Palpatine?" → yes with chance <b>p</b></li></ul><p>Then they say only <b>one number: how many yeses</b>. Not which ones!</p>',
+  s:'<div class="small center">One person thinks…</div><div class="qrow" id="s2c" style="margin-top:10px">'+sixCards()+'</div><div class="center small" id="s2n" style="min-height:22px;margin-top:6px"></div><div class="center" id="s2t" style="min-height:80px;margin-top:8px"></div><div class="center"><button onclick="ppGo(PS)">🙋 New person</button></div>',
+  a(){const cs=document.querySelectorAll('#s2c .qc'),ys=[];for(let i=0;i<6;i++)ys.push(Math.random()<(i<5?.5:.3));let x=0;
+    ys.forEach((y,i)=>later(()=>{setCard(cs[i],y);x+=y?1:0;$('#s2n').innerHTML=(i<5?'Harmless question '+(i+1):'The secret question')+' · yes so far: <b>'+x+'</b>';},400+i*500));
+    later(()=>{$('#s2c').classList.add('hid');$('#s2t').innerHTML='<div class="bubble" style="font-size:17px">🗣️ "I said yes <b>'+x+'</b> times."</div><div class="small" style="margin-top:6px">The cards fade: we never see them. That one number is all we hear.</div>';},3700);}},
+ {t:'Why is it safe? 🛡️',
+  x:'<p>Two people both say <b>3</b>.</p><p>Person A: 3 harmless yeses + secret <b>no</b>.<br>Person B: 2 harmless yeses + secret <b>yes</b>.</p><p>Palpatine hears <b>"3" and "3"</b>. Who said <b>"no"</b> to the secret question? He <b>can\'t know</b>, so he can\'t punish anybody! The 5 coin flips hide the secret, like a crowd hides one person.</p><div class="key">So people can be honest, and we still get information about p. 👍</div>',
+  s:'<div class="prow"><div class="pname">🧑 Person A</div><div class="qrow" id="s3a">'+sixCards()+'</div><div class="psays" id="s3at"></div></div><div class="prow"><div class="pname">👩 Person B</div><div class="qrow" id="s3b">'+sixCards()+'</div><div class="psays" id="s3bt"></div></div><div class="center" id="s3r" style="min-height:40px"></div>',
+  a(){const A=[1,1,1,0,0,0],B=[1,0,1,0,0,1],ca=document.querySelectorAll('#s3a .qc'),cb=document.querySelectorAll('#s3b .qc');
+    later(()=>{$('#s3at').innerHTML='<div class="bubble">🗣️ "3"</div>';$('#s3bt').innerHTML='<div class="bubble">🗣️ "3"</div>';},300);
+    later(()=>{$('#s3r').innerHTML='<span class="small">Palpatine only hears these. Let\'s secretly peek inside… 👀</span>';},1000);
+    for(let i=0;i<6;i++)later(()=>{setCard(ca[i],A[i]);setCard(cb[i],B[i]);},1800+i*350);
+    later(()=>{ca[5].classList.add('ring');cb[5].classList.add('ring');$('#s3r').innerHTML='<div class="bubble">Same answer · <b>different secret</b> 🤷 Palpatine can\'t tell who said "no"!</div>';},4100);}},
+ {t:'What we have: 1000 numbers 📊',
+  x:'<p>We asked <b>1000 people</b>. Now we have 1000 numbers: 3, 2, 4, 1, …</p><p>We draw them as bars: how many people said 0, 1, 2, … 6.</p><p>👀 Look: <b>nobody said 0</b>! Why? If you say 0, then <b>all</b> your answers were "no", also the secret one. Palpatine knows you said "no" → 🪓! So people who had 0 say <b>1</b> instead. Remember this, we will need it!</p><div class="ex">The question now: <b>which p</b> makes data that looks like this?</div>',
+  s:'<div class="small center">Answers coming in:</div><div class="stream" id="s4s"></div><div class="chartwrap"><div id="s4b"></div></div><div class="center small">People counted: <b id="s4n">0</b> · average so far: <b id="s4m">–</b></div><div class="center" id="s4z" style="min-height:40px;margin-top:6px"></div>',
+  a(){let i=0,t=0;const c=new Array(7).fill(0),mx=Math.max(...REAL.c)/1000*1.15;
+    const tick=()=>{const end=Math.min(1000,i+(i<40?2:25));for(;i<end;i++){c[REAL_LIST[i]]++;t+=REAL_LIST[i];}
+      bars($('#s4b'),c.map(v=>v/1000),[0,1,2,3,4,5,6],{max:mx,h:130,top:(v,k)=>c[k],color:'#7f8c8d'});
+      $('#s4s').innerHTML=REAL_LIST.slice(Math.max(0,i-12),i).map(v=>'<span>'+v+'</span>').join('');$('#s4n').textContent=i;$('#s4m').textContent=(t/i).toFixed(3);
+      if(i<1000)later(tick,i<40?120:45);else $('#s4z').innerHTML='<div class="bubble">👀 Bar 0 is empty: saying 0 = saying "no" = 🪓</div>';};
+    later(tick,200);}},
+ {t:'Write a story (a model) 📖',
+  x:'<p>We write a <b>story</b> for one person, with <b>2 random variables</b>:</p><pre class="slines" id="s5code"><span>H = binomial(5, 0.5)    # 😇 harmless yeses</span><span>S = bernoulli(p)        # 🤫 secret yes?</span><span>answer = H + S          # they say the total</span><span>if answer == 0: answer = 1   # 0 would show a "no" 🪓</span></pre><p>The story has <b>one knob</b> we don\'t know: <b>p</b>. 🎛️</p><p class="small">Watch the yellow line: it shows which line of the story is running.</p>',
+  s:'<div class="small center">One fake person (here we just guess p = 0.3)</div><div class="mach2"><div class="rvbox"><small>😇 H ~ Bin(5, ½)</small><b id="s5H">?</b></div><span class="arrowtxt">+</span><div class="rvbox" style="--c:var(--red)"><small>🤫 S ~ Ber(p)</small><b id="s5S">?</b></div><span class="arrowtxt">=</span><div class="rvbox" style="--c:var(--green)"><small>🗣️ answer</small><b id="s5A">?</b></div></div><div class="center" id="s5R" style="min-height:44px"></div><div class="center"><button onclick="ppGo(PS)">🙋 One more fake person</button></div>',
+  a(){let H=0;for(let i=0;i<5;i++)H+=Math.random()<.5?1:0;const S=Math.random()<.3?1:0;
+    const L=k=>document.querySelectorAll('#s5code span').forEach((s,j)=>s.classList.toggle('hl',j===k));
+    later(()=>L(0),200);for(let j=0;j<10;j++)later(()=>{$('#s5H').textContent=Math.floor(Math.random()*6);},250+j*80);
+    later(()=>{$('#s5H').textContent=H;popEl('#s5H');$('#s5R').innerHTML='<span class="small">5 coin flips → '+H+' yes</span>';},1100);
+    later(()=>{L(1);$('#s5S').textContent='🎲';},1700);later(()=>{$('#s5S').textContent=S;popEl('#s5S');$('#s5R').innerHTML='<span class="small">secret: '+(S?'yes (1)':'no (0)')+'</span>';},2300);
+    later(()=>{L(2);$('#s5A').textContent=H+S;popEl('#s5A');$('#s5R').innerHTML='<span class="small">'+H+' + '+S+' = '+(H+S)+'</span>';},3000);
+    later(()=>{L(3);if(H+S===0){$('#s5A').textContent=1;popEl('#s5A');$('#s5R').innerHTML='<div class="bubble">It was 0 → the rule makes it <b>1</b></div>';}else $('#s5R').innerHTML='<span class="small">Not 0, so the rule does nothing. This person says <b>'+(H+S)+'</b>.</span>';},3800);}},
+ {t:'Guess p → make 1000 fake people 🤖',
+  x:'<p>Now we <b>guess</b> a p and run the story <b>1000 times</b>, the same number of people as the real data.</p><p>Blue bars = our fake people. <span class="legend"><span class="dash"></span></span> red dashes = the real people.</p><p>👉 <b>Move the p slider</b> and just <b>look</b>: what happens to the blue bars? Bigger p → the bars move <b>right</b>. Smaller p → they move <b>left</b>.</p><p>Find the p where the blue bars <b>look the same</b> as the dashes. That\'s our answer! 👀</p><div class="key">This is the normal way: change the knob, look with your eyes. (A bonus way with averages is in the next step.)</div>',
+  s:'<div class="row center">p = <input type="range" id="s6p" min="0" max="0.5" step="0.01" value="0.3" oninput="s6P();s6Run()"> <b id="s6pv">0.30</b></div><div class="center"><button onclick="s6Run()">▶ Run 1000 fake people</button></div><div class="chartwrap"><div id="s6b"></div></div><div class="legend center">Blue = fake (our story) · <span class="dash"></span> = real people</div><div class="ex" id="s6h" style="font-size:13px"></div>',
+  a(){s6Run();}},
+ {t:'⭐ Bonus: compare the averages 📈',
+  x:'<p class="optnote">⭐ <b>Bonus way.</b> Looking at the bars (last step) is enough. But looking at 7 bars is not exact. So here we compare just <b>one number: the average</b>.</p><p>Watch the computer try <b>every p</b> from 0 to 0.5. For each p: 1000 fake people → one average → one dot.</p><p>Red line = the <b>real</b> average. Where the dots cross the red line, that\'s our p! 🎯</p><div class="key">Fake too high → p down ⬇️ · fake too low → p up ⬆️</div>',
+  s:'<div id="s7svg"></div><div class="center small" id="s7t" style="min-height:36px"></div>',
+  a(){const dots=[];let p=0;$('#s7svg').innerHTML=s7Svg([],false);
+    const tick=()=>{let t=0;for(let j=0;j<1000;j++)t+=pollAnswer(p,Math.random,true);const v=t/1000;dots.push([p,v]);
+      $('#s7svg').innerHTML=s7Svg(dots,false);$('#s7t').innerHTML='Try p = <b>'+p.toFixed(2)+'</b> → 1000 fake people → average <b>'+v.toFixed(3)+'</b> '+(v>REAL.mean?'(too high)':'(too low)');
+      p=Math.round(p*100+1)/100;if(p<=0.5)later(tick,90);
+      else later(()=>{$('#s7svg').innerHTML=s7Svg(dots,true);$('#s7t').innerHTML='The dots cross the red line near <b>p ≈ '+P_EST.toFixed(2)+'</b>. 🎯';},400);};
+    later(tick,400);}},
+ {t:'The answer 🎉',
+  x:'<p>The bars fit best (and the averages cross) at <b>p ≈ '+P_EST.toFixed(2)+'</b>. So about <b>'+Math.round(P_EST*100)+' in 100</b> people secretly support Palpatine.</p><p>And <b>nobody</b> had to tell us their secret! 🛡️</p><p>On the left: everything we did, in one loop.</p><p class="small">Scientists really use this trick to ask about secret things (like cheating on a test). It is called <b>randomized response</b>.</p><div class="key">Today we turned the knob by hand. Later, the computer does it alone: that is <b>training</b>. 🤖</div><p>👇 Still asking "wait, why…?" Look at the cards below.</p>',
+  s:'<div class="flow" id="s8f" style="margin-top:8px"><div class="fchip">📊 Real data: 1000 numbers</div><div class="fdown">↓</div><div class="fchip">📖 Story: answer = H + S (0 → 1)</div><div class="fdown">↓</div><div class="fchip">🎛️ Guess p</div><div class="fdown">↓</div><div class="fchip">🤖 Run the story 1000 times</div><div class="fdown">↓</div><div class="fchip">👀 Compare the bars <small>(bonus: averages)</small></div><div class="fdown">↓</div><div class="fchip">🔁 Different? Turn p, go back to 🎛️</div><div class="fdown">↓ they look the same!</div><div class="fchip" style="font-weight:800">🎯 p ≈ '+P_EST.toFixed(2)+'</div></div>',
+  a(){const ch=document.querySelectorAll('#s8f .fchip');[0,1,2,3,4,5,2,3,4,5,6].forEach((k,j)=>later(()=>ch.forEach((c,i)=>c.classList.toggle('on',i===k)),300+j*700));}}
+];
+function ppGo(i){PS=Math.max(0,Math.min(STEPS.length-1,i));PRUN++;const st=STEPS[PS];
+  $('#ppDots').innerHTML=STEPS.map((s,k)=>'<button class="sdot'+(k===PS?' on':k<PS?' done':'')+'" title="'+s.t+'" onclick="ppGo('+k+')">'+(k+1)+'</button>').join('');
+  $('#ppNum').textContent='Step '+(PS+1)+' of '+STEPS.length;$('#ppTitle').innerHTML=st.t;$('#ppText').innerHTML=st.x;$('#ppStage').innerHTML=st.s;st.a();}
+
+// ---- wait 1: two random variables ----
+function w1Pos(sorted){document.querySelectorAll('#w1s .mc').forEach((c,i)=>{c.style.transitionDelay=(sorted?i*0.12:0)+'s';
+    if(!sorted){c.style.left=(2+i*16.3)+'%';c.style.top='12px';}else if(i<5){c.style.left=(4+i*13)+'%';c.style.top='126px';}else{c.style.left='80%';c.style.top='126px';}});
+  $('#w1H').classList.toggle('on',sorted);$('#w1S').classList.toggle('on',sorted);}
+// ---- wait 2: why sum ----
+let W2=0;
+function w2Play(){const id=++W2,s=$('#w2s');s.querySelectorAll('.tok').forEach(t=>t.remove());const hs=[];let H=0;for(let i=0;i<5;i++){const y=Math.random()<.5;hs.push(y);H+=y;}const S=Math.random()<.4?1:0;
+  $('#w2h').innerHTML=hs.map(y=>y?'✔':'✘').join(' ')+' → <b>'+H+'</b>';$('#w2sv').innerHTML=(S?'✔':'✘')+' → <b>'+S+'</b>';$('#w2tot').textContent='';
+  const mk=(c,l,t)=>{const d=document.createElement('div');d.className='tok '+c;d.style.left=l+'%';d.style.top=t+'px';s.appendChild(d);return d;};
+  const toks=[];for(let j=0;j<H;j++)toks.push(mk('g',4+j*9,34));if(S)toks.push(mk('r',4,104));
+  setTimeout(()=>{if(id!==W2)return;toks.forEach((d,j)=>{d.style.transitionDelay=(j*0.15)+'s';d.style.left=(64+(j%3)*10)+'%';d.style.top=(34+Math.floor(j/3)*28)+'px';});},800);
+  setTimeout(()=>{if(id!==W2)return;toks.forEach(d=>d.classList.add('mix'));const A=H+S;$('#w2tot').innerHTML=A===0?'0 → 1':A;popEl('#w2tot');},1700+toks.length*150);}
+// ---- wait 3: why 0 becomes 1 ----
+const W3P=ansPmf(.09,false),W3R=REAL.c.map(v=>v/1000),W3M=Math.max(...W3P,...W3R)*1.15;
+function w3Build(){let h='<div class="bars" style="height:120px;position:relative">';
+  for(let k=0;k<7;k++)h+='<div class="bcol"><div class="bv" id="w3v'+k+'">'+(k===0?'<b style="color:#d9741c">3%</b>':'')+'</div><div class="bwrap"><div class="stk"><div class="seg mv" id="w3m'+k+'" style="height:0"></div><div class="seg" id="w3s'+k+'" style="height:'+(W3P[k]/W3M*100)+'%"></div></div><div class="bout" style="height:'+(W3R[k]/W3M*100)+'%"></div></div><div class="bl">'+k+'</div></div>';
+  $('#w3b').innerHTML=h+'<div class="fly" id="w3f">+3% ➜</div></div>';
+  $('#w3t').innerHTML='❌ <b>Without the rule</b>, the story says: average = 2.5 + p. The real average is '+REAL.mean.toFixed(3)+', so p ≈ '+REAL.mean.toFixed(3)+' − 2.5 = <b>'+(REAL.mean-2.5).toFixed(3)+'</b>. Too big! The moved zeros made the real average a bit higher, and we would think it was p.';}
+function w3Apply(){$('#w3s0').style.height='0';$('#w3m1').style.height=(W3P[0]/W3M*100)+'%';$('#w3v0').textContent='0';$('#w3v1').innerHTML='<b style="color:#d9741c">+3%</b>';$('#w3f').classList.add('go');
+  $('#w3t').innerHTML='✅ <b>With the rule</b>, the story makes data the same way as the poll: no zeros. Now the averages match at <b>p ≈ '+P_EST.toFixed(3)+'</b>. 🎯';}
+// ---- wait 4: why minus 2.5 ----
+let W4=0;
+function w4Play(){const id=++W4,wrap=$('#w4wrap'),bar=$('#w4bar'),fix=(1-P_EST)/32,m=REAL.mean;bar.innerHTML='';
+  wrap.querySelectorAll('.w4m,.w4t').forEach(e=>e.remove());[0,1,2,2.5,3].forEach(v=>wrap.insertAdjacentHTML('beforeend','<div class="w4t" style="left:'+(v/3*100)+'%">'+v+'</div>'));
+  const parts=[0,1,2,3,4].map(()=>[.5,'½','#4a8ad6']).concat([[fix,'','#95a5a6'],[P_EST,'p','#c0392b']]),segs=parts.map(([v,l,c])=>{const d=document.createElement('div');d.className='w4seg';d.style.background=c;d.textContent=l;bar.appendChild(d);return d;});
+  const eq=$('#w4eq');eq.innerHTML='Average of one answer = …';let txt='';
+  parts.forEach(([v],i)=>setTimeout(()=>{if(id!==W4)return;segs[i].style.width=(v/3*100)+'%';
+    txt+=i<5?(i?' + ':'')+'½':i===5?' + 0.03 <span style="color:#7f8c8d">(0 → 1 rule)</span>':' + <b style="color:#c0392b">p</b>';eq.innerHTML='Average = '+txt+(i===4?' = <b>2.5</b>':'');},300+i*450));
+  setTimeout(()=>{if(id!==W4)return;wrap.insertAdjacentHTML('beforeend','<div class="w4m" style="left:'+(m/3*100)+'%">real average '+m.toFixed(3)+' ▼</div>');
+    eq.innerHTML='Real average '+m.toFixed(3)+' = 2.5 + 0.03 + <b style="color:#c0392b">p</b><br>→ <b style="color:#c0392b">p</b> ≈ '+m.toFixed(3)+' − 2.5 − 0.03 ≈ <b>'+P_EST.toFixed(2)+'</b> ✅';},300+7*450+300);}
+// ---- wait 5: why 1000 ----
+let W5N=1000,W5=0;const W5V=(()=>{const P=ansPmf(.09,true),e=sum(P.map((q,k)=>q*k));return sum(P.map((q,k)=>q*(k-e)*(k-e)));})();
+function w5Set(n){W5N=n;document.querySelectorAll('.w5n').forEach(b=>b.classList.toggle('on',+b.dataset.n===n));w5Run();}
+function w5Run(){const id=++W5,dots=[],st={},W=340,H=150,lo=1.9,hi=3.3,X=v=>20+(Math.min(hi,Math.max(lo,v))-lo)/(hi-lo)*(W-40);let i=0;
+  const draw=()=>{let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%"><line x1="20" y1="'+(H-28)+'" x2="'+(W-20)+'" y2="'+(H-28)+'" stroke="#555"/>';
+    for(let v=2;v<=3.21;v+=0.2)s+='<line x1="'+X(v)+'" y1="'+(H-28)+'" x2="'+X(v)+'" y2="'+(H-23)+'" stroke="#555"/><text x="'+X(v)+'" y="'+(H-12)+'" font-size="10" text-anchor="middle">'+v.toFixed(1)+'</text>';
+    s+='<line x1="'+X(REAL.mean)+'" y1="10" x2="'+X(REAL.mean)+'" y2="'+(H-28)+'" stroke="#c0392b" stroke-width="2" stroke-dasharray="5 3"/><text x="'+(X(REAL.mean)+4)+'" y="12" font-size="10" fill="#c0392b">real</text><text x="'+(W/2)+'" y="'+(H-1)+'" font-size="10" text-anchor="middle" fill="#556">average of one run</text>';
+    dots.forEach(d=>{s+='<circle cx="'+d[0]+'" cy="'+d[1]+'" r="3.6" fill="#8e44ad" opacity=".85"/>';});$('#w5svg').innerHTML=s+'</svg>';};
+  const step=()=>{if(id!==W5)return;let t=0;for(let j=0;j<W5N;j++)t+=pollAnswer(.09,Math.random,true);const b=Math.round(X(t/W5N)/7);st[b]=(st[b]||0)+1;dots.push([b*7,Math.max(6,H-32-(st[b]-1)*7)]);draw();if(++i<40)setTimeout(step,70);};
+  const s=Math.sqrt(W5V/W5N),dp=2*s/(31/32);
+  $('#w5t').innerHTML='With <b>'+W5N+'</b> people the average wobbles about ±'+s.toFixed(2)+'.<br>So p = 0.09 could look like anything from <b>'+Math.max(0,.09-dp).toFixed(2)+'</b> to <b>'+(.09+dp).toFixed(2)+'</b>.';
+  draw();step();}
+// ---- wait 6: why averages ----
+function w6Draw(){const p=+$('#w6p').value,e=2.5+p+(1-p)/32,X=v=>(Math.min(3.1,Math.max(2.4,v))-2.4)/0.7*100;$('#w6pv').textContent=p.toFixed(2);$('#w6s').style.left=X(e)+'%';$('#w6r').style.left=X(REAL.mean)+'%';
+  $('#w6t').innerHTML='Story average = 2.5 + p + 0.03 = <b>'+e.toFixed(3)+'</b> · Real average = <b>'+REAL.mean.toFixed(3)+'</b><br>'+(Math.abs(e-REAL.mean)<0.01?'🎯 Match! p ≈ '+p.toFixed(2):e>REAL.mean?'Story too high → move p down ⬇️':'Story too low → move p up ⬆️');}
+
+// ================= INIT =================
+w3Build();w6Draw();
+resetCoins();bernReset();binReset();poiReset();drawRuler();setMode('kitchen');pmfDraw();binCalc();poiCmp();hardWay();pdfDraw();cdfDraw();evDraw();varDraw();modelRun();coffeeRun();
+showChapter('rv');
+</script>
+<script src="../assets/sidebar.js"></script>
+</body>
+</html>
