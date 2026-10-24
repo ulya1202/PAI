@@ -37,6 +37,7 @@ body.sb-open #sbPanel{transform:none}
 #sbList .sbN{display:block;font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#8a6d1f}
 #sbList .sbT{display:block;font-weight:600;font-size:14.5px}
 @media (max-width:700px){body{padding-top:44px}}
+#gcViews{position:fixed;bottom:14px;right:14px;z-index:1000;font:600 13px "Segoe UI",system-ui,sans-serif;color:#fff;border:1px solid #3b3f7a;border-radius:18px;padding:6px 12px;box-shadow:0 4px 14px rgba(11,16,48,.3);background:linear-gradient(160deg,#0b1030,#1b1f4b 55%,#2a1846);pointer-events:none}
 `;
 const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
@@ -48,6 +49,14 @@ panel.innerHTML='<div id="sbHead">✨ Probability for AI ✨<small>Pick a sectio
   '<hr><h4>📚 Sections</h4>'+
   SECTIONS.map(s=>'<a href="'+new URL(s.dir+'/index.html',root).href+'"'+(here.includes(s.dir)?' class="cur"':'')+'><span class="sbI">'+s.icon+'</span><span><span class="sbN">'+s.num+'</span><span class="sbT">'+s.title+'</span></span></a>').join('')+'</div>';
 document.body.append(btn,shade,panel);
+
+// GoatCounter: counts page views on every page that loads this file
+const gc=document.createElement('script');gc.async=true;gc.src='https://gc.zgo.at/count.js';
+gc.dataset.goatcounter='https://ulya1202.goatcounter.com/count';
+document.body.appendChild(gc);
+// Public view count (needs "Allow adding visitor counts on your website" in GoatCounter settings)
+fetch('https://ulya1202.goatcounter.com/counter/TOTAL.json').then(r=>r.ok?r.json():Promise.reject())
+  .then(d=>{const v=document.createElement('div');v.id='gcViews';v.textContent='👀 '+d.count+' views';document.body.appendChild(v);}).catch(()=>{});
 
 const toggle=v=>document.body.classList.toggle('sb-open',v);
 btn.onclick=()=>toggle(true);
