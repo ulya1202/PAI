@@ -1,18 +1,669 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Section 1 Review</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probability: the Map 🎲 (Section 1)</title>
 <style>
-body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eef3fa,#f9fbfe);color:#22313f;text-align:center;padding:24px 16px;min-height:100vh}
-h1{margin:10px 0 6px}
-p{color:#556}
-</style>
-</head>
-<body>
-  <h1>📘 Section 1</h1>
-  <p>Coming soon…</p>
+:root{--line:#9fb3c8;--blue:#2e6da4;--green:#1e9e6a;--purple:#8e44ad;--orange:#d9741c;--red:#c0392b;--teal:#138d90;--pink:#c2185b}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#eef3fa,#f9fbfe);color:#22313f}
+header{text-align:center;padding:22px 16px 6px}header h1{margin:0 0 6px;font-size:28px}header p{margin:0;color:#556}
+.hint{display:inline-block;background:#fff;border:1px solid #d5e0ee;border-radius:20px;padding:6px 14px;margin-top:10px;font-size:14px}
+.tree{overflow-x:auto;padding:10px 10px 40px}.tree>.br{padding-top:0;width:max-content;min-width:100%;margin:0 auto}
+.br{display:flex;justify-content:safe center;padding:26px 0 0;margin:0;position:relative;list-style:none}
+.nd{list-style:none;position:relative;padding:26px 8px 0;display:flex;flex-direction:column;align-items:center}
+.nd::before,.nd::after{content:'';position:absolute;top:0;right:50%;width:50%;height:26px;border-top:2px solid var(--line)}
+.nd::after{right:auto;left:50%;border-left:2px solid var(--line)}
+.nd:only-child::before,.nd:only-child::after{display:none}.nd:only-child{padding-top:0}
+.nd:first-child::before,.nd:last-child::after{border:0 none}
+.nd:last-child::before{border-right:2px solid var(--line);border-radius:0 8px 0 0}.nd:first-child::after{border-radius:8px 0 0 0}
+.br .br::before{content:'';position:absolute;top:0;left:50%;height:26px;border-left:2px solid var(--line)}
+.nd:not(.open)>.br{display:none}
+.node{--c:var(--blue);background:#fff;border:2px solid var(--c);border-radius:14px;box-shadow:0 3px 12px rgba(30,60,100,.08);min-width:170px;max-width:250px}
+.nhead{cursor:pointer;padding:10px 14px;font-weight:700;text-align:center;color:var(--c);user-select:none;font-size:16px}
+.nhead:hover{background:rgba(0,0,0,.025);border-radius:12px}
+.teaser{display:block;font-weight:400;font-size:12px;color:#7a8794;margin-top:2px}
+.arr{display:inline-block;transition:transform .2s;margin-right:6px;font-size:13px}
+.nd.open>.node .teaser{display:none}.nd.open>.node .arr{transform:rotate(90deg)}
+.nd.open>.node{width:430px;max-width:none}.nd.open>.node.wide{width:1000px}
+.nbody{display:none;padding:2px 14px 14px;gap:16px;text-align:left;font-size:14.5px;line-height:1.5}
+.nd.open>.node>.nbody{display:grid}.nd.open>.node.wide>.nbody{grid-template-columns:1fr 1fr}
+.nbody p{margin:6px 0}.nbody ul,.nbody ol{margin:4px 0;padding-left:20px}
+.nanim{background:#f5f8fc;border-radius:12px;padding:10px 12px;border:1px dashed #c4d3e6;align-self:start}
+.nanim h5{margin:0 0 6px;font-size:13px;color:#667;text-transform:uppercase;letter-spacing:.5px}
+.ex{background:#fff8e6;border-left:4px solid #f0b429;padding:6px 10px;border-radius:6px;margin:8px 0}
+.key{background:#eaf6ef;border-left:4px solid var(--green);padding:6px 10px;border-radius:6px;margin:8px 0}
+.warn{background:#fdecea;border-left:4px solid var(--red);padding:6px 10px;border-radius:6px;margin:8px 0}
+.formula{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:18px;background:#eef4fb;border-radius:8px;padding:8px 10px;text-align:center;margin:8px 0}
+.pulse{animation:pulse 1.6s infinite}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,109,164,.45)}50%{box-shadow:0 0 0 10px rgba(46,109,164,0)}}
+button{font:inherit;font-size:13px;border:1px solid #b8c7da;background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;margin:2px}
+button:hover{background:#eaf1fa}button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+input[type=range]{width:140px;vertical-align:middle}.row{margin:4px 0;font-size:13.5px}
+.t{border-bottom:2px dotted var(--orange);cursor:help}
+#tip{position:fixed;display:none;max-width:300px;background:#1f2d3d;color:#fff;padding:9px 12px;border-radius:10px;font-size:13.5px;line-height:1.45;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}#tip b{color:#ffd479}
+details.code{margin:8px 0;border:1px solid #cfd9e6;border-radius:8px;background:#fff}
+details.code summary{cursor:pointer;padding:6px 10px;font-weight:600;color:#2d4a6b;font-size:13.5px}
+details.code pre{margin:0;background:#1e2733;color:#e6edf3;padding:10px 12px;border-radius:0 0 8px 8px;font-size:12.5px;overflow-x:auto;line-height:1.45}
+.center{text-align:center}.small{font-size:12.5px;color:#667}
+.faces{display:flex;gap:6px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+.face{width:44px;height:44px;border-radius:9px;border:2px solid #b8c7da;background:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;transition:.25s;position:relative}
+.face.a{background:#d6eaff;border-color:var(--blue)}.face.b{background:#ffe6cc;border-color:var(--orange)}
+.face.ab{background:linear-gradient(135deg,#d6eaff 50%,#ffe6cc 50%);border-color:var(--red);animation:wob .5s 2}
+.face .cnt{position:absolute;top:-8px;right:-8px;background:var(--red);color:#fff;border-radius:10px;font-size:11px;padding:0 5px}
+@keyframes wob{50%{transform:scale(1.15) rotate(-6deg)}}
+.grid6{display:grid;grid-template-columns:22px repeat(6,1fr);gap:2px;font-size:12px;max-width:300px;margin:6px auto}
+.grid6 div{height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px}
+.grid6 .c{background:#fff;border:1px solid #d6dfea;font-size:10.5px;color:#889}.grid6 .c.on{background:#f39c12;color:#fff;border-color:#f39c12}
+.grid6 .c.on2{background:#4a8ad6;color:#fff}.grid6 .h{font-weight:700;color:#556}
+.dice{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;font-size:30px;min-height:40px;margin:6px 0}
+.dice span{animation:pop .35s both}.dice span.six{filter:drop-shadow(0 0 4px #f39c12)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+.chap .nhead2{padding:9px 12px;font-weight:700;color:var(--c);text-align:center;cursor:pointer}
+.chap.active{background:var(--c)}.chap.active .nhead2{color:#fff}.chap .nhead2 small{display:block;font-weight:400;font-size:11.5px;opacity:.8}
+.rootnav{position:relative;overflow:hidden;padding:14px 22px;font-weight:800;font-size:18px;letter-spacing:.5px;text-align:center;color:#fff;border-color:#3b3f7a;text-shadow:0 0 8px rgba(255,255,255,.6);
+  background:radial-gradient(1.5px 1.5px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 18% 70%,#fff,transparent),radial-gradient(2px 2px at 30% 35%,#fff,transparent),radial-gradient(1px 1px at 42% 80%,#cfd8ff,transparent),radial-gradient(1.5px 1.5px at 55% 20%,#fff,transparent),radial-gradient(1px 1px at 63% 60%,#fff,transparent),radial-gradient(2px 2px at 74% 30%,#ffeaa7,transparent),radial-gradient(1px 1px at 82% 75%,#fff,transparent),radial-gradient(1.5px 1.5px at 92% 40%,#fff,transparent),radial-gradient(1px 1px at 97% 85%,#cfd8ff,transparent),radial-gradient(ellipse at 70% 120%,rgba(142,68,173,.55),transparent 60%),radial-gradient(ellipse at 15% -20%,rgba(46,109,164,.6),transparent 60%),linear-gradient(160deg,#0b1030,#1b1f4b 55%,#2a1846)}
+.rootnav .star{position:absolute;color:#fff;font-size:9px;line-height:1;animation:twinkle 2.4s infinite;pointer-events:none;text-shadow:0 0 6px #fff}
+.rootnav .star:nth-child(2){animation-delay:.8s;color:#ffeaa7}
+.rootnav .star:nth-child(3){animation-delay:1.6s}
+.rootnav .star:nth-child(4){animation-delay:.4s;color:#cfd8ff}
+.rootnav .star:nth-child(5){animation-delay:1.2s}
+@keyframes twinkle{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.25)}}
+.chapter{display:none}.chapter.show{display:block;animation:fade .3s}@keyframes fade{from{opacity:0}to{opacity:1}}
+.tools{text-align:center;margin-top:4px}
+.robot{font-size:15px;background:#1e2733;color:#e6edf3;border-radius:10px;padding:10px;font-family:Consolas,monospace;min-height:62px}
+.robot .ans{color:#ffd479;font-weight:700}
+.olist{font-size:13px}.olist div{display:flex;align-items:center;gap:6px;margin:3px 0}
+.olist .ob{height:16px;background:#4a8ad6;border-radius:3px;transition:.3s}.olist .ob.hl{background:#f39c12}
+.olist .on{width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step{display:none;border:2px solid #d6dfea;border-radius:10px;padding:8px 10px;margin:8px 0;background:#fff}
+.step.show{display:block;animation:fade .4s}.step .q{color:var(--purple);font-weight:700}
+.step .a{display:none;margin-top:4px}.step.ans .a{display:block;animation:fade .4s}
+.prog{display:flex;gap:4px;margin:6px 0}.prog span{flex:1;height:6px;border-radius:3px;background:#dfe7f1}.prog span.on{background:var(--green)}
+.cnt2{font-size:20px;font-weight:800;text-align:center}
+.chip{display:inline-block;border-radius:12px;padding:1px 9px;font-weight:700;font-size:12.5px;color:#fff;margin:0 2px}
+.chip.and{background:var(--orange)}.chip.or{background:var(--blue)}.chip.not{background:var(--purple)}.chip.given{background:var(--teal)}
+.w{display:inline-block;background:#fff;border:2px solid #c4d3e6;border-radius:8px;padding:1px 7px;font-weight:600;font-size:12.5px;margin:1px 0}
+.brow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#fff;border-radius:8px;padding:5px 7px;margin:3px 0;animation:pop .4s both;font-size:12.5px}
+.brow.tot{background:#fff3e0;font-weight:700}.brow.fin{background:#eaf6ef;font-weight:700;font-size:14px}
+.oror{text-align:center;animation:pop .4s both;margin:1px 0}
+.tabs button.on{background:var(--pink);border-color:var(--pink)}
+.cellbox{background:#fff;border-radius:8px;padding:6px 8px;font-size:13px;min-height:40px;margin-top:4px}
+.prompt{font-family:Consolas,monospace;background:#1e2733;color:#e6edf3;border-radius:6px;padding:1px 6px;font-size:12.5px}
+footer{text-align:center;color:#889;font-size:12.5px;padding:10px 0 30px}
+.stackbar{display:flex;height:34px;background:#dbe8f7;border:1px solid #c4d3e6;border-radius:6px;overflow:hidden;margin:10px 0 2px}
+.sseg{width:0;transition:width .5s;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;border-right:1px solid rgba(255,255,255,.7)}
+.tlab{display:flex;justify-content:space-between;font-size:11px;color:#778}
+.slot{display:inline-flex;align-items:center;gap:6px;background:#fff;border:2px solid #c4d3e6;border-radius:10px;padding:6px 10px;margin:8px 0;font-size:14px}
+.slot b{font-size:24px}
+.slot .x{color:var(--red);animation:shake .15s 6}
+@keyframes shake{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+.pchips{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;min-height:30px;margin:6px 0}
+.pchips span{font-size:20px;animation:pop .3s both}
+.pchips span.hit{filter:drop-shadow(0 0 5px #f39c12);font-size:26px}
+
+</style></head><body>
+<header><h1>🎲 Probability: the Map</h1><p>Probability for AI · Section 1 review · "Same Prompt, Different Answers?"</p>
+<div class="hint">👆 Click a box to open it · 🖱️ Move your mouse over <span class="t" data-k="dotted">dotted words</span> · 🐍 Click "Python code" to open the code</div></header>
+
+<div class="tree navtree"><ul class="br"><li class="nd open"><div class="node rootnav"><span class="star" style="left:7%;top:18%">✦</span><span class="star" style="left:22%;top:62%">✧</span><span class="star" style="left:78%;top:20%">✦</span><span class="star" style="left:90%;top:60%">✧</span><span class="star" style="left:50%;top:8%;font-size:7px">✦</span>✨ Section 1 ✨</div><ul class="br">
+<li class="nd"><div class="node chap" data-ch="prob" style="--c:var(--blue)"><div class="nhead2">1. 🎲 Probability & its rules<small>axioms · OR · AND · complement</small></div></div></li>
+<li class="nd"><div class="node chap" data-ch="robot" style="--c:var(--pink)"><div class="nhead2">2. 🤖 Same Prompt, Different Answers?<small>the section problem, step by step</small></div></div></li>
+</ul></li></ul></div>
+
+<!-- ===================== CHAPTER 1 ===================== -->
+<section class="chapter" id="ch-prob">
+<div class="tools"><button onclick="openAll('prob',true)">Open all</button><button onclick="openAll('prob',false)">Close all</button></div>
+<div class="tree"><ul class="br"><li class="nd">
+ <div class="node wide pulse" style="--c:var(--blue)">
+  <div class="nhead"><span class="arr">▶</span>🎲 What is probability?<span class="teaser">click me!</span></div>
+  <div class="nbody"><div>
+   <p>[[prob|Probability]] is a <b>number from 0 to 1</b> that says <b>how likely</b> something is. 0 = it never happens, 1 = it always happens.</p>
+   <p>Three words we use all the time:</p>
+   <ul>
+    <li>[[exp|Experiment]]: something random we do. <i>Roll a die.</i></li>
+    <li>[[ss|Sample space S]]: <b>all</b> possible outcomes. <i>S = {1, 2, 3, 4, 5, 6}</i></li>
+    <li>[[event|Event E]]: <b>some</b> of the outcomes, the ones we care about. <i>E = "the die is even" = {2, 4, 6}</i></li>
+   </ul>
+   <p>If all outcomes are <b>equally likely</b>, we just count:</p>
+   <div class="formula">P(E) = |E| / |S| = (outcomes in E) / (all outcomes)</div>
+   <div class="ex"><b>Example:</b> P(even) = 3 / 6 = 0.5</div>
+   <div class="key">🔁 <b>Another way to see it:</b> repeat the experiment many, many times. P(E) is the <b>fraction of times</b> E happens. Try it on the right!</div>
+   <details class="code"><summary>🐍 Python code: probability by counting and by repeating</summary><pre>import random
+
+S = [1, 2, 3, 4, 5, 6]
+E = [2, 4, 6]
+print(len(E) / len(S))                  # 0.5 (by counting)
+
+hits = 0
+for i in range(10000):
+    if random.choice(S) in E:
+        hits += 1
+print(hits / 10000)                     # about 0.5 (by repeating)</pre></details>
+   <p class="small">👇 Probability follows 3 basic rules. Open them below.</p>
+  </div>
+  <div class="nanim">
+   <h5>🎯 Choose an event</h5>
+   <div class="center"><button class="evb" onclick="setEv('even')">even</button><button class="evb" onclick="setEv('ge5')">≥ 5</button><button class="evb" onclick="setEv('six')">a 6</button><button class="evb" onclick="setEv('all')">any number</button><button class="evb" onclick="setEv('none')">a 7</button></div>
+   <div class="faces" id="evFaces"></div>
+   <div class="center" id="evTxt"></div>
+   <hr>
+   <h5>🔁 Roll many times</h5>
+   <div class="center"><button onclick="evRoll(1)">Roll 1</button><button onclick="evRoll(10)">Roll 10</button><button onclick="evRoll(100)">Roll 100</button><button onclick="evRoll(1000)">Roll 1000</button><button onclick="evReset()">Reset</button></div>
+   <div class="dice" id="evDice"></div>
+   <div id="evFrac" class="center small"></div>
+   <svg id="evLine" viewBox="0 0 340 110" width="100%"></svg>
+   <div class="small center">Red dashed line = the exact probability. The blue line moves toward it!</div>
+  </div></div>
+ </div>
+ <ul class="br"><li class="nd">
+  <div class="node wide" style="--c:var(--teal)">
+   <div class="nhead"><span class="arr">▶</span>📜 The 3 axioms<span class="teaser">the basic rules</span></div>
+   <div class="nbody"><div>
+    <p>An [[axiom|axiom]] is a rule we <b>accept without proof</b>. All of probability is built on just these 3:</p>
+    <div class="formula" style="text-align:left;font-size:16px">
+     <b>Axiom 1:</b> 0 ≤ P(E) ≤ 1<br>
+     <b>Axiom 2:</b> P(S) = 1<br>
+     <b>Axiom 3:</b> if E and F are [[me|mutually exclusive]], P(E or F) = P(E) + P(F)</div>
+    <ul>
+     <li><b>1:</b> a probability is never negative and never more than 1 (no "120% chance"!).</li>
+     <li><b>2:</b> <i>something</i> from the sample space always happens.</li>
+     <li><b>3:</b> if two events can't happen at the same time, we can add their chances.</li>
+    </ul>
+    <div class="ex">🎬 <b>Moana & Up:</b> we ask a student which of the two movies they like. Every student is in exactly one box: <b>only Moana</b>, <b>only Up</b>, <b>both</b>, or <b>neither</b>. These 4 boxes are mutually exclusive and cover everybody. So their chances must <b>add up to 1</b>.<br>Move the sliders on the right and see when the axioms break! 💥</div>
+    <p class="small">(The numbers here are just an example to practice with. They may not be the same as the numbers in the lecture.)</p>
+    <p class="small">👇 Now let's see the two big questions, <b>OR</b> and <b>AND</b>, and also the <b>complement</b>.</p>
+   </div>
+   <div class="nanim">
+    <h5>✅ Is it a valid probability?</h5>
+    <div class="row">🌊 only Moana <input type="range" id="ax1" min="-0.2" max="1.2" step="0.05" value="0.3" oninput="axDraw()"> <b id="ax1v"></b></div>
+    <div class="row">🎈 only Up &nbsp;&nbsp;&nbsp;<input type="range" id="ax2" min="-0.2" max="1.2" step="0.05" value="0.2" oninput="axDraw()"> <b id="ax2v"></b></div>
+    <div class="row">💙 both &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="range" id="ax3" min="-0.2" max="1.2" step="0.05" value="0.3" oninput="axDraw()"> <b id="ax3v"></b></div>
+    <div class="row">😐 neither &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="range" id="ax4" min="-0.2" max="1.2" step="0.05" value="0.2" oninput="axDraw()"> <b id="ax4v"></b></div>
+    <div id="axBar" style="display:flex;height:28px;border-radius:6px;overflow:hidden;border:1px solid #ccd;margin:8px 0"></div>
+    <div id="axChk" style="font-size:13.5px"></div>
+   </div></div>
+  </div>
+  <ul class="br">
+   <li class="nd"><div class="node wide" style="--c:var(--blue)">
+    <div class="nhead"><span class="arr">▶</span>➕ OR: P(E or F)<span class="teaser">E ∪ F: at least one happens</span></div>
+    <div class="nbody"><div>
+     <p><b>"E or F"</b> ([[union|E ∪ F]]) means: E happens, <b>or</b> F happens, <b>or both</b>.</p>
+     <p>Our first idea: just add P(E) + P(F). But be careful! If E and F <b>overlap</b>, the overlap is counted <b>two times</b>. 😬</p>
+     <div class="ex">🎬 P(likes Moana) = 0.6, P(likes Up) = 0.5. Is P(Moana or Up) = 1.1? <b>No! That breaks Axiom 1.</b> The students who like <b>both</b> were counted twice.</div>
+     <p>So the first question for OR is always: <b>can E and F happen at the same time?</b> The tree splits here 👇</p>
+    </div>
+    <div class="nanim">
+     <h5>🎬 Moana or Up?</h5>
+     <div class="row">P(Moana) <input type="range" id="vA" min="0" max="1" step="0.05" value="0.6" oninput="vennDraw()"> <b id="vAv"></b></div>
+     <div class="row">P(Up) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="range" id="vB" min="0" max="1" step="0.05" value="0.5" oninput="vennDraw()"> <b id="vBv"></b></div>
+     <div class="row">P(both) &nbsp;&nbsp;<input type="range" id="vC" min="0" max="1" step="0.05" value="0.3" oninput="vennDraw()"> <b id="vCv"></b></div>
+     <svg id="venn" viewBox="0 0 340 150" width="100%"></svg>
+     <div id="vennTxt" style="font-size:13.5px"></div>
+    </div></div></div>
+    <ul class="br">
+     <li class="nd"><div class="node" style="--c:var(--green)">
+      <div class="nhead"><span class="arr">▶</span>✅ Mutually exclusive<span class="teaser">no overlap → just add</span></div>
+      <div class="nbody"><div>
+       <p>[[me|Mutually exclusive]] = E and F <b>can't happen at the same time</b>. No overlap.</p>
+       <div class="formula">P(E or F) = P(E) + P(F)</div>
+       <p>This is <b>Axiom 3</b>! Example with one die: E = "1 or 2", F = "a 5". One die can't show a 2 and a 5 at once.</p>
+       <p>P = 2/6 + 1/6 = <b>3/6</b> ✔</p>
+       <div class="key">💡 Works for many events too: if no two of them overlap, P(E₁ or E₂ or …) = P(E₁) + P(E₂) + …</div>
+      </div>
+      <div class="nanim center"><h5>🎲 E = {1, 2}, F = {5}</h5><div class="faces" id="meF"></div><button onclick="meShow()">▶ Show</button><div id="meTxt" class="small"></div></div>
+      </div></div></li>
+     <li class="nd"><div class="node" style="--c:var(--red)">
+      <div class="nhead"><span class="arr">▶</span>⚠️ NOT mutually exclusive<span class="teaser">overlap → subtract it once</span></div>
+      <div class="nbody"><div>
+       <p>E and F <b>can</b> happen together. We add, then <b>remove the overlap once</b>, because we counted it twice. This is called [[ie|inclusion–exclusion]].</p>
+       <div class="formula">P(E or F) = P(E) + P(F) − P(E and F)</div>
+       <p>Example: E = "even" {2, 4, 6}, F = "3 or less" {1, 2, 3}. The <b>2</b> is in both!</p>
+       <p>P = 3/6 + 3/6 − 1/6 = <b>5/6</b> ✔</p>
+       <p>🎬 Moana or Up: 0.6 + 0.5 − 0.3 = <b>0.8</b> ✔</p>
+       <details class="code"><summary>🐍 Python code</summary><pre>E = {2, 4, 6}
+F = {1, 2, 3}
+print(len(E | F) / 6)                            # 5/6 (count E ∪ F)
+print(len(E)/6 + len(F)/6 - len(E &amp; F)/6)       # 5/6 (formula)</pre></details>
+      </div>
+      <div class="nanim center"><h5>🎲 even OR ≤ 3</h5><div class="faces" id="nmeF"></div><button onclick="nmeShow()">▶ Show</button><div id="nmeTxt" class="small"></div></div>
+      </div></div></li>
+    </ul></li>
+   <li class="nd"><div class="node wide" style="--c:var(--orange)">
+    <div class="nhead"><span class="arr">▶</span>✖️ AND: P(E and F)<span class="teaser">E ∩ F: both happen</span></div>
+    <div class="nbody"><div>
+     <p><b>"E and F"</b> ([[inter|E ∩ F]]) means: <b>both</b> E and F happen.</p>
+     <p>Example: we roll <b>two dice</b>. The sample space has 6 × 6 = <b>36</b> equally likely outcomes. Look at the grid on the right: every cell is one outcome.</p>
+     <p>"Die 1 is a 6 <b>and</b> die 2 is a 6" is just <b>1 cell</b>: 1/36.</p>
+     <div class="key">📐 <b>The general AND rule</b> (the [[chain|chain rule]]):
+      <div class="formula" style="font-size:16px">P(E and F) = P(E) · P(F | E)</div>
+      [[cond|P(F | E)]] = "the chance of F, <b>if we already know</b> E happened". This is a <b>conditional</b> probability.</div>
+     <p>So the question for AND is: <b>does knowing E change the chance of F?</b> The tree splits here 👇</p>
+    </div>
+    <div class="nanim"><h5>🎲🎲 Two dice: 36 outcomes</h5>
+     <div class="center"><button onclick="g6('d1six')">die 1 = 6</button><button onclick="g6('d2six')">die 2 = 6</button><button onclick="g6('both6')">both = 6</button><button onclick="g6('sum7')">sum = 7</button></div>
+     <div class="grid6" id="g6"></div><div id="g6t" class="center small"></div></div></div></div>
+    <ul class="br">
+     <li class="nd"><div class="node" style="--c:var(--green)">
+      <div class="nhead"><span class="arr">▶</span>✅ Independent<span class="teaser">no effect → just multiply</span></div>
+      <div class="nbody"><div>
+       <p>[[indep|Independent]] = knowing that E happened <b>doesn't change</b> the chance of F. So P(F | E) = P(F), and the AND rule becomes simple:</p>
+       <div class="formula">P(E and F) = P(E) · P(F)</div>
+       <p>Two dice don't talk to each other! P(6 and 6) = 1/6 · 1/6 = <b>1/36</b> ✔ (the same as counting cells).</p>
+       <p>Coins, dice, and <b>two separate calls to a language model</b> are independent. (We need this in chapter 2! 🤖)</p>
+       <div class="key">💡 Works for many events: P(E₁ and E₂ and …) = P(E₁) · P(E₂) · …</div>
+       <details class="code"><summary>🐍 Python code</summary><pre>import random
+hits = 0
+for i in range(36000):
+    d1 = random.randint(1, 6)
+    d2 = random.randint(1, 6)
+    if d1 == 6 and d2 == 6:
+        hits += 1
+print(hits / 36000, 1/6 * 1/6)    # both about 0.0278</pre></details>
+      </div>
+      <div class="nanim center"><h5>🎲🎲 Roll two dice</h5><button onclick="indRoll(1)">Roll 1</button><button onclick="indRoll(360)">Roll 360</button><button onclick="indRoll(3600)">Roll 3600</button>
+       <div class="dice" id="indD"></div><div id="indT" class="small"></div></div></div></div></li>
+     <li class="nd"><div class="node" style="--c:var(--red)">
+      <div class="nhead"><span class="arr">▶</span>⚠️ NOT independent<span class="teaser">multiplying gives a wrong answer</span></div>
+      <div class="nbody"><div>
+       <p>Sometimes one event <b>does</b> change the chance of the other. Then P(E) · P(F) is <b>wrong</b>, and we need P(F | E).</p>
+       <div class="ex">E = "die 1 is a 6" (6/36), F = "the sum is 11 or more" (3/36).<br>
+       Just multiply: 6/36 · 3/36 ≈ <b>0.014</b> ❌<br>Count the cells: (6,5), (6,6) → 2/36 ≈ <b>0.056</b> ✔<br>
+       Why? If die 1 is a 6, a big sum is <b>much more likely</b>: P(F | E) = 2/6, not 3/36.<br>
+       Chain rule: 1/6 · 2/6 = 2/36 ✔</div>
+       <p><b>Only multiply P(E) · P(F) if you can say why the events are independent.</b> Conditional probability comes back later in the course.</p>
+      </div>
+      <div class="nanim center"><h5>🔗 die 1 = 6 AND sum ≥ 11</h5><div class="grid6" id="g6b"></div><button onclick="g6bShow()">▶ Show</button><div id="g6bt" class="small"></div></div></div></div></li>
+    </ul></li>
+   <li class="nd"><div class="node wide" style="--c:var(--purple)">
+    <div class="nhead"><span class="arr">▶</span>🔄 Complement: 1 − P<span class="teaser">the "lazy" trick</span></div>
+    <div class="nbody"><div>
+     <p>The [[comp|complement]] Eᶜ means "<b>E does NOT happen</b>". E and Eᶜ are mutually exclusive, and together they make the whole sample space. So P(E) + P(Eᶜ) = 1 (Axioms 2 and 3!):</p>
+     <div class="formula">P(E) = 1 − P(Eᶜ)</div>
+     <div class="key">😴 <b>Why is this so useful?</b> Very often, calculating P(E) directly is <b>long and annoying</b>, because it has many cases. But the opposite event has <b>only a few cases</b>. So it is easier to calculate the opposite and <b>subtract it from 1</b>.</div>
+     <div class="ex"><b>Example:</b> roll n dice. What is P(at least one 6)?<br>
+     Directly: exactly one 6, or exactly two 6s, or … many cases! 😩<br>
+     Opposite: "<b>no 6 at all</b>" is just one case: every die is not a 6 → (5/6)ⁿ (independent → multiply!)<br>
+     So: P(at least one 6) = <b>1 − (5/6)ⁿ</b> 🎉</div>
+     <p>💡 Hear "<b>at least one</b>"? Think <b>complement</b>!</p>
+     <details class="code"><summary>🐍 Python code</summary><pre>n = 4
+print(1 - (5/6)**n)       # 0.518
+
+import random
+hits = sum(any(random.randint(1, 6) == 6 for d in range(n))
+           for i in range(10000))
+print(hits / 10000)       # about 0.518</pre></details>
+    </div>
+    <div class="nanim"><h5>🎲 At least one 6 in n dice</h5>
+     <div class="row">n = <input type="range" id="cn" min="1" max="10" value="4" oninput="compDraw()"> <b id="cnv"></b></div>
+     <div class="dice" id="cDice"></div><div class="center"><button onclick="compRoll()">🎲 Roll n dice</button></div>
+     <div id="cTxt" style="font-size:13.5px"></div></div></div></div></li>
+  </ul></li></ul>
+</li></ul></div>
+</section>
+
+<!-- ===================== CHAPTER 2 ===================== -->
+<section class="chapter" id="ch-robot">
+<div class="tools"><button onclick="openAll('robot',true)">Open all</button><button onclick="openAll('robot',false)">Close all</button></div>
+<div class="tree"><ul class="br"><li class="nd">
+ <div class="node wide pulse" style="--c:var(--pink)">
+  <div class="nhead"><span class="arr">▶</span>🤖 The hook: Same prompt, different answers?<span class="teaser">click me!</span></div>
+  <div class="nbody"><div>
+   <p>Ask a chatbot the <b>same question twice</b>, and you often get <b>two different answers</b>. Is that a <b>bug</b> or a <b>feature</b>? 🤔</p>
+   <ul>
+    <li>🎨 <b>Feature:</b> if a model always said the same thing, asking again would be pointless. Variety is great for brainstorming and creative writing.</li>
+    <li>🐞 <b>Bug (sometimes):</b> for a factual answer, we want the same answer every time.</li>
+   </ul>
+   <p><b>How does a model choose?</b> It does <b>not</b> pick one answer. It reads the [[prompt|prompt]], gives a <b>probability to every possible ending</b>, and then it [[sample|samples]] one, like rolling a special die. 🎲</p>
+   <p>Our [[toy|toy model]] reads the prompt <span class="prompt">A sleepy robot dreams about…</span> and it can finish it in only <b>5 ways</b>:</p>
+   <ul style="font-size:13.5px">
+    <li>🐑 "A sleepy robot dreams about <b>electric sheep</b>"</li>
+    <li>🔌 "A sleepy robot dreams about <b>a quiet charging station</b>"</li>
+    <li>🧩 "A sleepy robot dreams about <b>solving puzzles</b>"</li>
+    <li>🔢 "A sleepy robot dreams about <b>counting outcomes</b>"</li>
+    <li>🐶 "A sleepy robot dreams about <b>robot puppies</b>"</li>
+   </ul>
+   <div class="key">🔑 Each ending has its own chance, <b>but only for this prompt</b>. For example, 0.44 is the chance of "<i>…dreams about electric sheep</i>" <b>given</b> that the prompt is "<i>A sleepy robot dreams about</i>". So every chance in the table is a <b>conditional</b> probability (more about this in Step 3!).</div>
+   <div class="ex">❓ <b>Our question:</b> we give the model the <b>same prompt twice</b>. What is the probability that the two answers are <b>different</b>?<br>
+   🧠 Make a gut guess first: <input type="number" id="guess" min="0" max="1" step="0.05" placeholder="0.??" style="width:70px"> We'll come back to it!</div>
+   <details class="code"><summary>🐍 Python code: the toy model</summary><pre>import random
+
+prompt  = "A sleepy robot dreams about"
+endings = ["electric sheep", "a quiet charging station", "solving puzzles",
+           "counting outcomes", "robot puppies"]
+probs   = [0.44, 0.20, 0.14, 0.13, 0.09]   # P(ending | prompt)
+
+def prompt_model():
+    ending = random.choices(endings, weights=probs)[0]
+    return prompt + " " + ending
+
+print(prompt_model())
+print(prompt_model())    # maybe different!</pre></details>
+   <p class="small">👇 Open the solution, step by step.</p>
+  </div>
+  <div class="nanim"><h5>💤 Prompt: "A sleepy robot dreams about…"</h5>
+   <div class="robot" id="robOut">&gt; A sleepy robot dreams about <span class="ans">_</span></div>
+   <div class="center"><button onclick="robPrompt()">🤖 Prompt the model</button><button onclick="robReset()">Reset</button></div>
+   <div class="small" style="margin-top:6px"><b>P( ending | prompt = "A sleepy robot dreams about" )</b></div>
+   <div class="olist" id="olist"></div>
+   <div class="small">Bars = the chance of each ending, given this prompt. Orange = what it chose this time. Last number = how many times so far.</div>
+  </div></div>
+ </div>
+ <ul class="br"><li class="nd">
+  <div class="node wide" style="--c:var(--purple)">
+   <div class="nhead"><span class="arr">▶</span>🧩 The solution, step by step<span class="teaser">think first, then click</span></div>
+   <div class="nbody"><div>
+    <p>For every step: <b>read the question, think</b>, and then click <b>"Show the answer"</b>.</p>
+    <div class="prog" id="prog"></div>
+    <div class="step" id="s0"><div class="q">Step 1 ❓ We prompt twice. What can happen? What does "same" mean, and what does "different" mean?</div>
+     <div class="a">Every result is a <b>pair</b>: (what call 1 says, what call 2 says).<br>
+     <b>"Same"</b> has only <b>5</b> pairs:<br>
+     <span class="w">🐑 dreams about electric sheep + 🐑 dreams about electric sheep</span><br>
+     <span class="w">🔌 dreams about a quiet charging station + 🔌 dreams about a quiet charging station</span><br>
+     <span class="w">🧩 dreams about solving puzzles + 🧩 dreams about solving puzzles</span><br>
+     <span class="w">🔢 dreams about counting outcomes + 🔢 dreams about counting outcomes</span><br>
+     <span class="w">🐶 dreams about robot puppies + 🐶 dreams about robot puppies</span><br>
+     <b>"Different"</b> has <b>20</b> pairs, for example:<br>
+     <span class="w">🐑 dreams about electric sheep + 🐶 dreams about robot puppies</span><br>
+     <span class="w">🐶 dreams about robot puppies + 🐑 dreams about electric sheep</span> …<br>
+     (Careful: these two are <b>2 different cases</b>! The order matters: call 1 first, call 2 second.)<br>
+     👉 20 cases is a lot of work, 5 is much less. So let's find <b>P(same)</b> first. All 25 pairs are in the square on the right. 👉</div></div>
+    <div class="step" id="s1"><div class="q">Step 2 ❓ Let's name the events in words first.</div>
+     <div class="a"><b>E</b> = the event that both calls give the <b>same</b> ending.<br>
+     <b>B<sub>sheep</sub></b> = the event that <b>both</b> calls say "<i>A sleepy robot dreams about electric sheep</i>". In the same way: B<sub>station</sub>, B<sub>puzzles</sub>, B<sub>counting</sub>, B<sub>puppies</sub>.<br>
+     (On the slides they are called B₁ … B₅, and pᵢ is the chance of ending i.)</div></div>
+    <div class="step" id="s2"><div class="q">Step 3 ❓ Where does the number 0.44 come from? Is it just "the chance of electric sheep"?</div>
+     <div class="a">Not exactly! The model doesn't choose "electric sheep" out of nothing. First it reads the prompt, and <b>then</b> it chooses the next words. So 0.44 is the chance of "electric sheep" <span class="chip given">GIVEN</span> the prompt:
+     <div class="formula" style="font-size:15px">p<sub>sheep</sub> = P( "electric sheep" <b>|</b> prompt = "A sleepy robot dreams about" ) = 0.44</div>
+     This is a [[cond|conditional probability]]. Read "|" as "<b>given</b>".<br>
+     🔁 With a <b>different prompt</b>, the chances would be different! (Try it in "Wait, where do the chances come from?" below.)<br>
+     ✅ In our problem, <b>both calls get the same prompt</b>, so both calls use the <b>same table</b> of chances.</div></div>
+    <div class="step" id="s3"><div class="q">Step 4 ❓ What is the chance that both calls say "dreams about electric sheep"? Do we add or multiply? Why?</div>
+     <div class="a">Say it in words: <b>call 1 says "dreams about electric sheep" <span class="chip and">AND</span> call 2 says "dreams about electric sheep"</b>.<br>
+     It is an <b>AND</b>. Both calls get the same prompt, and call 2 <b>doesn't remember</b> call 1. So, given the prompt, the two calls are <b>independent</b>, and we <b>multiply</b>:
+     <div class="formula" style="font-size:15px">P(both "electric sheep" | prompt) = 0.44 × 0.44 = 0.1936</div>
+     The same for every ending: both "a quiet charging station" = 0.20 × 0.20 = 0.04, both "robot puppies" = 0.09 × 0.09 = 0.0081, …<br>
+     In general: <b>P(Bᵢ) = pᵢ · pᵢ = pᵢ²</b><br>
+     <span class="small">(🤔 Why can we multiply? See "Wait, why can we multiply?" below.)</span></div></div>
+    <div class="step" id="s4"><div class="q">Step 5 ❓ Now P(same). How do we put the 5 cases together? Add or multiply? Why?</div>
+     <div class="a">Say it in words: "same" = both "electric sheep" <span class="chip or">OR</span> both "a quiet charging station" <span class="chip or">OR</span> both "solving puzzles" <span class="chip or">OR</span> both "counting outcomes" <span class="chip or">OR</span> both "robot puppies".<br>
+     It is an <b>OR</b>. Can "both dream about electric sheep" and "both dream about robot puppies" happen at the same time? <b>No!</b> Call 1 gives only one ending. So these cases are <b>mutually exclusive</b>, and we <b>add</b>:
+     <div class="formula" style="font-size:15px">P(E) = P(B<sub>sheep</sub>) + P(B<sub>station</sub>) + … + P(B<sub>puppies</sub>) = Σ pᵢ²</div></div></div>
+    <div class="step" id="s5"><div class="q">Step 6 ❓ Put in the numbers.</div>
+     <div class="a"><div class="formula" style="font-size:13.5px;text-align:left">
+     🐑 both "electric sheep": 0.44 × 0.44 = 0.1936<br>🔌 both "a quiet charging station": 0.20 × 0.20 = 0.0400<br>🧩 both "solving puzzles": 0.14 × 0.14 = 0.0196<br>🔢 both "counting outcomes": 0.13 × 0.13 = 0.0169<br>🐶 both "robot puppies": 0.09 × 0.09 = 0.0081<br>
+     <b>P(same) = 0.1936 + 0.04 + 0.0196 + 0.0169 + 0.0081 = 0.2782</b></div></div></div>
+    <div class="step" id="s6"><div class="q">Step 7 ❓ But we wanted "different", not "same"! How do we get it? Why can we do 1 − P(same)?</div>
+     <div class="a">Every pair is <b>either</b> "same" <b>or</b> "different". Never both, and there is no third option. So "different" is the <span class="chip not">NOT</span> of "same" (the <b>complement</b>), and the two chances <b>add up to 1</b>:
+     <div class="formula" style="font-size:16px">P(same) + P(different) = 1<br>P(different) = P(Eᶜ) = 1 − 0.2782 ≈ <b>0.72</b></div>
+     🎉 Even this tiny 5-ending model gives a <b>different answer almost 3 times out of 4</b>! Different answers are the <b>expected behavior</b>, not a glitch.<br><span id="guessBack"></span><br>
+     ✅ <b>Sanity check:</b> is 0.72 between 0 and 1? Yes. Extreme case: if the model always said "electric sheep" (p = 1), the answer would be 1 − 1 = 0. Makes sense!</div></div>
+    <div class="center"><button id="stepBtn" onclick="stepNext()">▶ Next question</button><button onclick="stepReset()">↺ Start again</button></div>
+   </div>
+   <div class="nanim">
+    <div class="center tabs"><button id="tabSq" class="on" onclick="tab('sq')">🟧 The square</button><button id="tabBu" onclick="tab('bu')">🎬 Build the formula</button></div>
+    <div id="paneSq">
+     <div class="small center">Prompt for <b>both</b> calls: <span class="prompt">A sleepy robot dreams about…</span></div>
+     <svg id="mosaic" viewBox="0 0 480 480" width="100%"></svg>
+     <div class="small">Every cell = one pair (call 1, call 2). The <b>area</b> of a cell = chance × chance (AND → multiply). <b>Orange</b> = "same", blue = "different". <b>Click a cell!</b></div>
+     <div class="cellbox" id="cellTxt">👆 Click any cell to see its story.</div>
+     <div class="center"><button onclick="drop(1)">● Drop 1 pair</button><button onclick="drop(100)">Drop 100</button><button onclick="drop(1000)">Drop 1000</button><button onclick="dropReset()">Reset</button></div>
+     <div id="dropTxt" class="center" style="font-size:13.5px"></div>
+    </div>
+    <div id="paneBu" style="display:none">
+     <p class="small">The whole solution in one picture: <span class="chip given">GIVEN the prompt</span> for every chance, <span class="chip and">AND → ×</span> inside each case, <span class="chip or">OR → +</span> between the cases, then <span class="chip not">NOT → 1 −</span> at the end.</p>
+     <div class="center"><button onclick="build()">▶ Play</button></div>
+     <div id="buOut"></div>
+    </div>
+   </div></div>
+  </div>
+  <ul class="br">
+   <li class="nd"><div class="node wide" style="--c:var(--teal)">
+    <div class="nhead"><span class="arr">▶</span>🤔 Wait, where do the chances come from?<span class="teaser">GIVEN the prompt · conditional</span></div>
+    <div class="nbody"><div>
+     <p>The chance of "<i>…dreams about electric sheep</i>" is not a fixed number of the world. It <b>depends on the prompt</b>. The model reads the prompt first, and <b>then</b> it gives chances to the endings.</p>
+     <div class="formula" style="font-size:15px">pᵢ = P( ending i <b>|</b> prompt )</div>
+     <p>So every pᵢ is a [[cond|conditional probability]]: "the chance of this ending, <b>given</b> this prompt".</p>
+     <p>👉 Change the prompt on the right: the same endings get <b>different chances</b>, and the answer to our question changes too!</p>
+     <div class="key">✅ In our problem the <b>prompt is the same</b> for both calls ("Same Prompt!"). So both calls use the <b>same</b> table: 0.44, 0.20, 0.14, 0.13, 0.09.</div>
+     <p class="small">(The "hungry robot" numbers are invented, just to show the idea.)</p>
+    </div>
+    <div class="nanim"><h5>🔀 Change the prompt</h5>
+     <div class="center"><button class="pbtn on" id="pb0" onclick="setPrompt(0)">😴 A sleepy robot dreams about…</button><button class="pbtn" id="pb1" onclick="setPrompt(1)">🍔 A hungry robot dreams about…</button></div>
+     <div class="small" id="pTitle" style="margin-top:6px"></div>
+     <div class="olist" id="pList"></div>
+     <div id="pTxt" class="center" style="font-size:14px;margin-top:6px"></div></div></div></div></li>
+   <li class="nd"><div class="node wide" style="--c:var(--orange)">
+    <div class="nhead"><span class="arr">▶</span>🤔 Wait, why can we multiply?<span class="teaser">AND · conditional · independent</span></div>
+    <div class="nbody"><div>
+     <p>"Both say electric sheep" = <b>call 1 says "A sleepy robot dreams about electric sheep" AND call 2 says "A sleepy robot dreams about electric sheep"</b>.</p>
+     <p>The general AND rule uses a [[cond|conditional probability]] (the [[chain|chain rule]]). Here there are <b>two</b> "given"s: the prompt, and what call 1 said:</p>
+     <div class="formula" style="font-size:14px">P(both sheep | prompt) =<br>P(call 1 = sheep | prompt) · P(call 2 = sheep <b>| prompt, call 1 = sheep</b>)</div>
+     <p>The first part is 0.44. What about the second part? Every call is a <b>fresh sample</b>. The model <b>doesn't remember</b> the first call, like a die that doesn't remember the last roll. Call 2 only "sees" the prompt:</p>
+     <div class="formula" style="font-size:14px">P(call 2 = sheep | prompt, call 1 = sheep) = P(call 2 = sheep | prompt) = 0.44</div>
+     <p>Knowing call 1 doesn't change call 2. That's what <b>independent</b> means. So: 0.44 × 0.44 ✔</p>
+     <div class="warn">⚠️ If the model <b>did</b> remember call 1 (for example, it sees the chat history), the second part would be different, and 0.44 × 0.44 would be <b>wrong</b>. Try the 🧠 button on the right!</div>
+    </div>
+    <div class="nanim"><h5>🔍 Call 1 said "…dreams about electric sheep". What does call 2 say?</h5>
+     <div class="center"><button onclick="indCheck(false)">▶ 1000 pairs: normal model</button><button onclick="indCheck(true)">🧠 1000 pairs: model WITH memory</button></div>
+     <div id="icTxt" style="font-size:13px"></div></div></div></div></li>
+   <li class="nd"><div class="node wide" style="--c:var(--blue)">
+    <div class="nhead"><span class="arr">▶</span>🤔 Wait, why can we add?<span class="teaser">OR · mutually exclusive</span></div>
+    <div class="nbody"><div>
+     <p>"Same" = both "electric sheep" <b>OR</b> both "a quiet charging station" <b>OR</b> both "solving puzzles" <b>OR</b> both "counting outcomes" <b>OR</b> both "robot puppies".</p>
+     <p>Can "both dream about electric sheep" and "both dream about robot puppies" happen <b>at the same time</b>? No! Call 1 can't say "electric sheep" and "robot puppies" at once.</p>
+     <p>So the cases are <b>mutually exclusive</b> (Axiom 3), and for OR we can just <b>add</b>.</p>
+     <p>On the square: the 5 orange cells <b>don't overlap</b>, so the total orange area = the sum of the 5 cells.</p>
+     <div class="warn">⚠️ Only add when the events can't happen together. Otherwise you count something twice.</div>
+    </div>
+    <div class="nanim center"><h5>🧱 Stack the 5 "same" cells</h5>
+     <button onclick="addStack()">▶ Add them up</button><button onclick="addClash()">🤔 Both sheep AND both puppies?</button>
+     <div class="stackbar" id="stk"></div><div class="tlab"><span>0</span><span>0.5</span><span>1</span></div>
+     <div id="stkTxt" style="font-size:13px;min-height:60px"></div></div></div></div></li>
+   <li class="nd"><div class="node wide" style="--c:var(--purple)">
+    <div class="nhead"><span class="arr">▶</span>🤔 Wait, why 1 − ?<span class="teaser">NOT · complement · 5 vs. 20</span></div>
+    <div class="nbody"><div>
+     <p>Every pair is "same" <b>or</b> "different". Never both, no third option. So P(same) + P(different) = 1, and P(different) = <b>1 − P(same)</b>.</p>
+     <p><b>Why not just add the "different" pairs?</b> We can! It is <b>correct</b>, just slower: there are <b>20</b> of them, like ("electric sheep", "robot puppies"), ("robot puppies", "electric sheep"), ("a quiet charging station", "solving puzzles")… "Same" has only <b>5</b>. Watch the long way 👉</p>
+     <div class="key">💡 When the event you want has many cases, look at the <b>opposite</b>.</div>
+     <details class="code"><summary>🐍 Python code: both ways</summary><pre>p = [0.44, 0.20, 0.14, 0.13, 0.09]
+direct = sum(p[i] * p[j] for i in range(5) for j in range(5) if i != j)
+comp   = 1 - sum(x * x for x in p)
+print(direct, comp)     # 0.7218 0.7218</pre></details>
+    </div>
+    <div class="nanim center"><h5>🐢 The long way: all 20 "different" pairs</h5><button onclick="longWay()">▶ Add all 20 pairs</button><div id="lwTxt" style="font-size:12px;text-align:left;max-height:220px;overflow:auto"></div><div class="cnt2" id="lwSum"></div></div></div></div></li>
+   <li class="nd"><div class="node" style="--c:var(--red)">
+    <div class="nhead"><span class="arr">▶</span>🤔 Wait, why not 0.8?<span class="teaser">a common mistake</span></div>
+    <div class="nbody"><div>
+     <p>A common answer: 1 − 1/5 = <b>0.8</b>. That is only true if all 5 endings are <b>equally likely</b>. Is "dreams about electric sheep" (0.44) as likely as "dreams about robot puppies" (0.09)? No!</p>
+     <p>Fun fact: the <b>equal</b> case gives the <b>most</b> different answers. Move the slider 👉</p>
+    </div>
+    <div class="nanim"><h5>⚖️ From our model → equal chances</h5>
+     <div class="row">our model <input type="range" id="mix" min="0" max="1" step="0.05" value="0" oninput="mixDraw()"> equal</div>
+     <div class="olist" id="mixList"></div><div id="mixTxt" class="center" style="font-size:14px"></div></div></div></div></li>
+   <li class="nd"><div class="node" style="--c:var(--teal)">
+    <div class="nhead"><span class="arr">▶</span>⭐ Optional: extra questions<span class="teaser">3 calls · temperature · puppies</span></div>
+    <div class="nbody"><div>
+     <p><b>1. Three calls, all the same?</b> Same idea: AND → p × p × p, OR → add: P = Σ pᵢ³ = <b id="p3"></b></p>
+     <p><b>2. When are matches most / least likely?</b> All the chance on one ending → always the same. Equal chances → the most variety.</p>
+     <p><b>3. [[temp|Temperature]]:</b> low T makes the model "sure" (the biggest chance gets bigger), high T makes the chances flatter. Move the slider 👉</p>
+     <p><b>4. How many calls until "…dreams about robot puppies"?</b> A complement question! P(at least one "robot puppies" in n calls) = 1 − P(no "robot puppies" at all) = 1 − 0.91ⁿ</p>
+     <div class="row">n = <input type="range" id="pn" min="1" max="40" value="8" oninput="pupDraw()"> <b id="pnv"></b> → <b id="pupv"></b></div>
+     <svg id="pupSvg" viewBox="0 0 340 120" width="100%"></svg>
+     <div class="center"><button onclick="pupRun()">🐶 Prompt until "robot puppies"</button></div>
+     <div class="pchips" id="pupChips"></div><div id="pupTxt" class="center small"></div>
+     <p class="small">Back to the hook: when would you <b>want</b> the same answer every time? (Maths answers, facts, code…)</p>
+    </div>
+    <div class="nanim"><h5>🌡️ Temperature</h5>
+     <div class="row">T = <input type="range" id="tT" min="0.1" max="3" step="0.1" value="1" oninput="tempDraw()"> <b id="tTv"></b></div>
+     <div class="olist" id="tList"></div><div id="tTxt" class="center" style="font-size:14px"></div></div></div></div></li>
+  </ul></li></ul>
+</li></ul></div>
+</section>
+
+<footer>Made for Probability for AI · Section 1 · Questions? Write them in the section forum 💬</footer>
+<div id="tip"></div>
+<script>
+const G={dotted:["Like this!","Dotted words have a short explanation. No need to scroll back."],
+prob:["Probability","A number from 0 to 1 that says how likely something is."],
+exp:["Experiment","Something random we do: roll a die, flip a coin, prompt a model."],
+ss:["Sample space S","The set of ALL possible outcomes."],
+event:["Event","A set of outcomes we care about. Name it with a capital letter and say it in words!"],
+axiom:["Axiom","A basic rule we accept without proof. Everything else is built on it."],
+me:["Mutually exclusive","Two events that can't happen at the same time. No overlap. For OR → add."],
+union:["E ∪ F (union)","“E or F”: at least one of them happens."],
+inter:["E ∩ F (intersection)","“E and F”: both happen."],
+ie:["Inclusion–exclusion","P(E or F) = P(E) + P(F) − P(E and F). Remove what we counted twice."],
+indep:["Independent","Knowing one event happened doesn't change the chance of the other. For AND → multiply."],
+cond:["Conditional probability P(F | E)","The chance of F if we already know E. Read “|” as “given”. Example: P(“electric sheep” | prompt)."],
+chain:["Chain rule","P(E and F) = P(E) · P(F | E). If E and F are independent, P(F | E) = P(F)."],
+comp:["Complement Eᶜ","“E does NOT happen”. P(Eᶜ) = 1 − P(E)."],
+prompt:["Prompt","The text we give to the model. The model's chances for the next words depend on it."],
+sample:["Sample","Pick one ending at random, using the probabilities."],
+toy:["Toy model","A tiny, simple version of a language model, so we can do the maths."],
+temp:["Temperature","A knob that makes the model's choices more sure (low T) or more random (high T)."]};
+document.querySelectorAll('.chapter').forEach(el=>{el.innerHTML=el.innerHTML.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(m,k,t)=>'<span class="t" data-k="'+k+'">'+t+'</span>');});
+const tip=document.getElementById('tip');
+function mv(e){let x=e.clientX+14,y=e.clientY+16;if(x+tip.offsetWidth>innerWidth-8)x=innerWidth-tip.offsetWidth-8;if(y+tip.offsetHeight>innerHeight-8)y=e.clientY-tip.offsetHeight-12;tip.style.left=x+'px';tip.style.top=y+'px';}
+document.addEventListener('mouseover',e=>{const t=e.target.closest('.t');if(!t||!G[t.dataset.k])return;tip.innerHTML='<b>'+G[t.dataset.k][0]+'</b><br>'+G[t.dataset.k][1];tip.style.display='block';mv(e);});
+document.addEventListener('mousemove',e=>{if(tip.style.display==='block')mv(e);});
+document.addEventListener('mouseout',e=>{if(e.target.closest('.t'))tip.style.display='none';});
+const $=s=>document.querySelector(s);
+document.addEventListener('click',e=>{const h=e.target.closest('.nhead');if(h){const li=h.closest('li.nd');li.classList.toggle('open');h.parentElement.classList.remove('pulse');if(li.classList.contains('open'))setTimeout(()=>h.parentElement.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),60);return;}
+const c=e.target.closest('.chap');if(c)showChapter(c.dataset.ch);});
+function showChapter(id){document.querySelectorAll('.chapter').forEach(s=>s.classList.toggle('show',s.id==='ch-'+id));document.querySelectorAll('.chap').forEach(c=>c.classList.toggle('active',c.dataset.ch===id));}
+function openAll(ch,v){document.querySelectorAll('#ch-'+ch+' li.nd').forEach(li=>li.classList.toggle('open',v));}
+const F=['⚀','⚁','⚂','⚃','⚄','⚅'];const rd=()=>1+Math.floor(Math.random()*6);
+function faces(el,cls,cnt){el.innerHTML=[1,2,3,4,5,6].map(v=>'<div class="face '+(cls[v]||'')+'">'+F[v-1]+(cnt&&cnt[v]?'<span class="cnt">×'+cnt[v]+'</span>':'')+'</div>').join('');}
+
+// ---- chapter 1
+const EVS={even:[2,4,6],ge5:[5,6],six:[6],all:[1,2,3,4,5,6],none:[]};const EVN={even:'even',ge5:'≥ 5',six:'a 6',all:'any number',none:'a 7'};
+let EV='even';const ER={n:0,h:0,pts:[]};
+function setEv(k){EV=k;document.querySelectorAll('.evb').forEach(b=>b.classList.toggle('on',b.textContent===EVN[k]));const c={};EVS[k].forEach(v=>c[v]='a');faces($('#evFaces'),c);
+ const n=EVS[k].length;$('#evTxt').innerHTML='E = "'+EVN[k]+'" = {'+EVS[k].join(', ')+'}<br>P(E) = '+n+' / 6 = <b>'+(n/6).toFixed(3)+'</b>'+(n===0?' → impossible':n===6?' → certain':'');evReset();}
+function evRoll(m){let last=[];for(let i=0;i<m;i++){const v=rd();ER.n++;if(EVS[EV].includes(v))ER.h++;if(m<=10)last.push(v);ER.pts.push(ER.h/ER.n);}
+ $('#evDice').innerHTML=last.map((v,i)=>'<span class="'+(EVS[EV].includes(v)?'six':'')+'" style="animation-delay:'+i*0.05+'s">'+F[v-1]+'</span>').join('')||(m>10?'<span>🎲×'+m+'</span>':'');
+ $('#evFrac').innerHTML='Rolls: <b>'+ER.n+'</b> · E happened: <b>'+ER.h+'</b> · fraction = <b>'+(ER.h/ER.n).toFixed(3)+'</b>';evLine();}
+function evReset(){ER.n=0;ER.h=0;ER.pts=[];$('#evDice').innerHTML='';$('#evFrac').innerHTML='Roll the die!';evLine();}
+function evLine(){const p=EVS[EV].length/6,W=340,H=110,Y=v=>H-10-v*(H-20);let s='<line x1="20" y1="'+Y(0)+'" x2="'+W+'" y2="'+Y(0)+'" stroke="#999"/><text x="2" y="'+(Y(1)+4)+'" font-size="10">1</text><text x="2" y="'+(Y(0)+4)+'" font-size="10">0</text><line x1="20" y1="'+Y(p)+'" x2="'+W+'" y2="'+Y(p)+'" stroke="#e74c3c" stroke-dasharray="5"/>';
+ const P=ER.pts,n=P.length;if(n>1){let d='';const step=Math.max(1,Math.floor(n/300));for(let i=0;i<n;i+=step)d+=(i?'L':'M')+(20+i/(n-1)*(W-25)).toFixed(1)+','+Y(P[i]).toFixed(1);s+='<path d="'+d+'" fill="none" stroke="#2e6da4" stroke-width="2"/>';}$('#evLine').innerHTML=s;}
+function axDraw(){const v=[1,2,3,4].map(i=>+$('#ax'+i).value),L=['🌊 only Moana','🎈 only Up','💙 both','😐 neither'],C=['#5dade2','#f5b041','#a569bd','#bdc3c7'];
+ v.forEach((x,i)=>$('#ax'+(i+1)+'v').textContent=x.toFixed(2));const s=v.reduce((a,b)=>a+b,0);
+ $('#axBar').innerHTML=v.map((x,i)=>'<div title="'+L[i]+'" style="width:'+Math.max(0,x)/Math.max(1,s)*100+'%;background:'+C[i]+'"></div>').join('');
+ const a1=v.every(x=>x>=0&&x<=1),a2=Math.abs(s-1)<1e-9;
+ $('#axChk').innerHTML=(a1?'✅':'❌')+' <b>Axiom 1:</b> every chance is between 0 and 1'+(a1?'':' (a negative or >1 chance!)')+'<br>'+(a2?'✅':'❌')+' <b>Axiom 2:</b> all 4 boxes add up to 1 → now: <b>'+s.toFixed(2)+'</b><br>'+(a1&&a2?'🎉 Valid! Then by <b>Axiom 3</b>: P(likes Moana) = only Moana + both = <b>'+(v[0]+v[2]).toFixed(2)+'</b>':'💥 This is not a valid probability.');}
+function vennDraw(){let a=+$('#vA').value,b=+$('#vB').value,c=+$('#vC').value;$('#vAv').textContent=a.toFixed(2);$('#vBv').textContent=b.toFixed(2);$('#vCv').textContent=c.toFixed(2);
+ const ra=30+38*Math.sqrt(a),rb=30+38*Math.sqrt(b);const mn=Math.max(0.01,Math.min(a,b));const d=c<=0?ra+rb+5:Math.max(Math.abs(ra-rb)+4,(ra+rb)*(1-Math.min(1,c/mn)*0.9));const cx=170,x1=cx-d/2,x2=cx+d/2;
+ $('#venn').innerHTML='<rect x="2" y="2" width="336" height="146" rx="10" fill="#fff" stroke="#ccd"/><text x="10" y="18" font-size="11" fill="#889">all students (S)</text><circle cx="'+x1+'" cy="80" r="'+ra+'" fill="#5dade2" opacity=".55"/><circle cx="'+x2+'" cy="80" r="'+rb+'" fill="#f5b041" opacity=".55"/><text x="'+(x1-ra+6)+'" y="84" font-size="12">🌊 Moana</text><text x="'+(x2+rb-50)+'" y="84" font-size="12">🎈 Up</text>';
+ const bad=c>Math.min(a,b)+1e-9,u=a+b-c;
+ $('#vennTxt').innerHTML=bad?'❌ "both" can\'t be bigger than P(Moana) or P(Up)!':'Just add: '+a.toFixed(2)+' + '+b.toFixed(2)+' = <b>'+(a+b).toFixed(2)+'</b> '+(a+b>1?'💥 more than 1!':'')+'<br>Remove "both" once: '+a.toFixed(2)+' + '+b.toFixed(2)+' − '+c.toFixed(2)+' = <b>'+u.toFixed(2)+'</b> '+(u>1?'❌ impossible numbers':'✔')+(c===0?'<br>P(both) = 0 → mutually exclusive → just add!':'');}
+function meShow(){const el=$('#meF');faces(el,{});$('#meTxt').innerHTML='';[[1,'a'],[2,'a'],[5,'b']].forEach(([v,c],i)=>setTimeout(()=>{el.children[v-1].classList.add(c);},300*(i+1)));
+ setTimeout(()=>$('#meTxt').innerHTML='Blue = E, orange = F. <b>No face has both colors.</b><br>2/6 + 1/6 = <b>3/6</b>',1100);}
+function nmeShow(){const el=$('#nmeF');faces(el,{});$('#nmeTxt').innerHTML='';[2,4,6].forEach((v,i)=>setTimeout(()=>el.children[v-1].classList.add('a'),250*(i+1)));
+ [1,3].forEach((v,i)=>setTimeout(()=>el.children[v-1].classList.add('b'),1000+250*i));
+ setTimeout(()=>{const f=el.children[1];f.className='face ab';f.innerHTML+='<span class="cnt">×2</span>';$('#nmeTxt').innerHTML='Blue = even (3), orange = ≤ 3 (3). The <b>2</b> was counted <b>twice</b>!<br>3/6 + 3/6 − 1/6 = <b>5/6</b>';},1700);}
+function grid(el,test,cls){let h='<div></div>'+[1,2,3,4,5,6].map(v=>'<div class="h">'+v+'</div>').join('');for(let r=1;r<=6;r++){h+='<div class="h">'+r+'</div>';for(let c=1;c<=6;c++)h+='<div class="c '+(test(r,c)?cls:'')+'">'+r+','+c+'</div>';}el.innerHTML=h;}
+const G6={d1six:[(a,b)=>a===6,'die 1 = 6: 6 cells → 6/36 = 1/6'],d2six:[(a,b)=>b===6,'die 2 = 6: 6 cells → 1/6'],both6:[(a,b)=>a===6&&b===6,'both = 6: <b>1 cell</b> → 1/36 = 1/6 · 1/6'],sum7:[(a,b)=>a+b===7,'sum = 7: 6 cells → 6/36']};
+function g6(k){grid($('#g6'),G6[k][0],'on');$('#g6t').innerHTML='Rows = die 1, columns = die 2.<br>'+G6[k][1];}
+function g6bShow(){const el=$('#g6b');grid(el,(a,b)=>a===6,'on2');$('#g6bt').innerHTML='Blue = die 1 is a 6…';setTimeout(()=>{grid(el,(a,b)=>a===6&&a+b>=11,'on');[...el.querySelectorAll('.c')].forEach((c,i)=>{const r=Math.floor(i/6)+1,col=i%6+1;if((r+col>=11||r===6)&&!(r===6&&r+col>=11))c.classList.add('on2');});
+ $('#g6bt').innerHTML='Blue = only one event. Orange = <b>both</b>: 2 cells → 2/36.<br>But 6/36 · 3/36 = 0.5/36 ❌';},900);}
+function indRoll(m){let h=0,a,b;for(let i=0;i<m;i++){a=rd();b=rd();if(a===6&&b===6)h++;}$('#indD').innerHTML='<span class="'+(a===6?'six':'')+'">'+F[a-1]+'</span><span class="'+(b===6?'six':'')+'">'+F[b-1]+'</span>';
+ $('#indT').innerHTML=m===1?(a===6&&b===6?'🎉 Double six!':'Not a double six.'):'Double six: <b>'+h+'</b> of '+m+' = '+(h/m).toFixed(4)+'<br>1/6 · 1/6 = 0.0278';}
+function compDraw(){const n=+$('#cn').value;$('#cnv').textContent=n;const q=Math.pow(5/6,n);
+ $('#cTxt').innerHTML='<b>Direct way:</b> exactly 1 six, or 2 sixes, …, or '+n+' sixes → many cases 😩<br><b>Complement:</b> "no six" = (5/6)<sup>'+n+'</sup> = '+q.toFixed(3)+'<br>P(at least one 6) = 1 − '+q.toFixed(3)+' = <b>'+(1-q).toFixed(3)+'</b>';}
+function compRoll(){const n=+$('#cn').value,v=[...Array(n)].map(rd);$('#cDice').innerHTML=v.map((x,i)=>'<span class="'+(x===6?'six':'')+'" style="animation-delay:'+i*0.06+'s">'+F[x-1]+'</span>').join('')+'<div style="width:100%;font-size:14px">'+(v.includes(6)?'✅ at least one 6':'❌ no 6 this time')+'</div>';}
+
+// ================= ROBOT =================
+const OUT=['electric sheep','a quiet charging station','solving puzzles','counting outcomes','robot puppies'],EM=['🐑','🔌','🧩','🔢','🐶'],P=[0.44,0.20,0.14,0.13,0.09];
+const NM=i=>EM[i]+' '+OUT[i];
+const DA=i=>EM[i]+' dreams about '+OUT[i];
+const RC=[0,0,0,0,0];
+function pick(p){let r=Math.random(),i=0;for(;i<p.length-1;i++){if(r<p[i])return i;r-=p[i];}return i;}
+function olist(el,p,hl,cnt){el.innerHTML=p.map((x,i)=>'<div><span class="on" title="'+OUT[i]+'">'+NM(i)+'</span><span class="ob'+(i===hl?' hl':'')+'" style="width:'+x*170+'px"></span><span>'+x.toFixed(2)+(cnt?' · '+cnt[i]:'')+'</span></div>').join('');}
+function robPrompt(){const el=$('#robOut');let k=0;const iv=setInterval(()=>{const j=Math.floor(Math.random()*5);el.innerHTML='&gt; A sleepy robot dreams about <span class="ans" style="opacity:.5">'+OUT[j]+'</span>';olist($('#olist'),P,j,RC);if(++k>8){clearInterval(iv);const i=pick(P);RC[i]++;el.innerHTML='&gt; A sleepy robot dreams about <span class="ans">'+OUT[i]+'</span> '+EM[i]+'💤';olist($('#olist'),P,i,RC);}},70);}
+function robReset(){RC.fill(0);$('#robOut').innerHTML='&gt; A sleepy robot dreams about <span class="ans">_</span>';olist($('#olist'),P,-1,RC);}
+
+let ST=0,SA=false;const NS=7;
+function stepDraw(){for(let i=0;i<NS;i++){const s=$('#s'+i);s.classList.toggle('show',i<=ST);s.classList.toggle('ans',i<ST||(i===ST&&SA));}
+ $('#prog').innerHTML=[...Array(NS)].map((_,i)=>'<span class="'+(i<ST||(i===ST&&SA)?'on':'')+'"></span>').join('');
+ $('#stepBtn').textContent=SA?(ST<NS-1?'▶ Next question':'🎉 Done!'):'💡 Show the answer';
+ const g=parseFloat($('#guess').value);$('#guessBack').innerHTML=isNaN(g)?'':'🧠 Your gut guess was <b>'+g+'</b>. '+(Math.abs(g-0.72)<0.06?'Very close! 👏':'How far was it? Why do you think so?');}
+function stepNext(){if(!SA)SA=true;else if(ST<NS-1){ST++;SA=false;}stepDraw();}
+function stepReset(){ST=0;SA=false;stepDraw();}
+function tab(t){$('#paneSq').style.display=t==='sq'?'':'none';$('#paneBu').style.display=t==='bu'?'':'none';$('#tabSq').classList.toggle('on',t==='sq');$('#tabBu').classList.toggle('on',t==='bu');}
+
+// ---- mosaic with full endings
+const DRP={n:0,s:0,pts:[],last:null};let SEL=null;const MS=300,MO=170;
+const cum=i=>P.slice(0,i).reduce((a,b)=>a+b,0);
+function mosaic(){const S=MS,o=MO;let h='<text x="'+(o+S/2)+'" y="12" font-size="12" text-anchor="middle" font-weight="700" fill="#556">Call 1: "A sleepy robot dreams about…" →</text><text x="2" y="'+(o-8)+'" font-size="11.5" font-weight="700" fill="#556">Call 2: "…dreams about" ↓</text>';
+ for(let i=0;i<5;i++){for(let j=0;j<5;j++){const x=o+cum(i)*S,y=o+cum(j)*S,w=P[i]*S,hh=P[j]*S,same=i===j,sel=SEL&&SEL[0]===i&&SEL[1]===j;
+  h+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+hh+'" fill="'+(same?'#f39c12':'#dbe8f7')+'" stroke="'+(sel?'#c0392b':'#fff')+'" stroke-width="'+(sel?3:2)+'" style="cursor:pointer" onclick="cellInfo('+i+','+j+')"><title>call 1: dreams about '+OUT[i]+' AND call 2: dreams about '+OUT[j]+' → '+P[i]+' × '+P[j]+' = '+(P[i]*P[j]).toFixed(4)+'</title></rect>';
+  if(same)h+='<text x="'+(x+w/2)+'" y="'+(y+hh/2+4)+'" font-size="'+(w>60?12:9)+'" text-anchor="middle" fill="#fff" font-weight="700" pointer-events="none">'+(w>60?EM[i]+' ':'')+(P[i]*P[i]).toFixed(4).replace(/^0/,'')+'</text>';}}
+ for(let i=0;i<5;i++){const cx=o+(cum(i)+P[i]/2)*S,cy=o+(cum(i)+P[i]/2)*S;
+  h+='<text transform="translate('+(cx+4)+','+(o-6)+') rotate(-55)" font-size="11" font-weight="700" fill="#34495e">'+EM[i]+' '+OUT[i]+'</text>';
+  h+='<text x="'+(o-6)+'" y="'+(cy+4)+'" font-size="11" text-anchor="end" font-weight="700" fill="#34495e">'+EM[i]+' '+OUT[i]+'</text>';}
+ h+=DRP.pts.slice(-600).map(p=>'<circle cx="'+(o+p[0]*S)+'" cy="'+(o+p[1]*S)+'" r="2.6" fill="'+(p[2]?'#c0392b':'#2e6da4')+'" pointer-events="none"/>').join('');
+ if(DRP.last)h+='<circle cx="'+(o+DRP.last[0]*S)+'" cy="'+(o+DRP.last[1]*S)+'" r="7" fill="none" stroke="#000" stroke-width="2" pointer-events="none"><animate attributeName="r" from="22" to="7" dur=".4s"/></circle>';
+ $('#mosaic').innerHTML=h;}
+function cellInfo(i,j){SEL=[i,j];mosaic();const v=P[i]*P[j],same=i===j;
+ $('#cellTxt').innerHTML='Call 1: <span class="w">'+EM[i]+' A sleepy robot dreams about '+OUT[i]+'</span><br><span class="chip and">AND</span><br>Call 2: <span class="w">'+EM[j]+' A sleepy robot dreams about '+OUT[j]+'</span><br>'+
+ 'Each chance is <span class="chip given">GIVEN the prompt</span>: P("'+OUT[i]+'" | prompt) = '+P[i]+', P("'+OUT[j]+'" | prompt) = '+P[j]+'<br>'+
+ 'AND + independent calls → multiply: '+P[i]+' × '+P[j]+' = <b>'+v.toFixed(4)+'</b><br>'+(same?'🟧 This is a <b>"same"</b> pair. It is one of the 5 orange cells we <b>add</b> (OR).':'🟦 This is a <b>"different"</b> pair, one of 20. We don\'t need to add these: we use 1 − P(same)!');}
+function cellOf(u){let c=0;for(let i=0;i<5;i++){c+=P[i];if(u<c)return i;}return 4;}
+function drop(m){for(let k=0;k<m;k++){const u=Math.random(),v=Math.random(),a=cellOf(u),b=cellOf(v),same=a===b;DRP.n++;if(!same)DRP.s++;DRP.pts.push([u,v,same]);DRP.last=m===1?[u,v]:null;
+  if(m===1)$('#dropTxt').innerHTML='Call 1: <b>'+DA(a)+'</b><br>Call 2: <b>'+DA(b)+'</b><br>→ '+(same?'🟧 same':'🟦 different');}
+ if(m>1)$('#dropTxt').innerHTML='Pairs: <b>'+DRP.n+'</b> · different: <b>'+DRP.s+'</b> → <b>'+(DRP.s/DRP.n).toFixed(3)+'</b> (the maths says 0.722)';mosaic();}
+function dropReset(){DRP.n=0;DRP.s=0;DRP.pts=[];DRP.last=null;$('#dropTxt').innerHTML='';mosaic();}
+
+let BT=[];
+function build(){BT.forEach(clearTimeout);BT=[];const el=$('#buOut');el.innerHTML='';let t=0,sum=0;
+ const add=(h,d)=>{BT.push(setTimeout(()=>{el.insertAdjacentHTML('beforeend',h);},t));t+=d;};
+ add('<div class="brow" style="background:#e6f6f6">Prompt for both calls: <span class="prompt">A sleepy robot dreams about…</span> <span class="chip given">GIVEN</span> → every chance below is P(ending | prompt)</div>',900);
+ add('<div class="small" style="margin:4px 0"><b>"Same"</b> means one of these 5 cases:</div>',500);
+ for(let i=0;i<5;i++){const v=P[i]*P[i];sum+=v;
+  add('<div class="brow"><span class="w">'+DA(i)+'</span><span class="chip and">AND</span><span class="w">'+DA(i)+'</span> → '+P[i]+' × '+P[i]+' = <b>'+v.toFixed(4)+'</b></div>',800);
+  if(i<4)add('<div class="oror"><span class="chip or">OR → +</span></div>',350);}
+ add('<div class="brow tot">= P(same) = 0.1936 + 0.0400 + 0.0196 + 0.0169 + 0.0081 = '+sum.toFixed(4)+'</div>',900);
+ add('<div class="oror"><span class="chip not">NOT "same" = "different" → 1 −</span></div>',600);
+ add('<div class="brow fin">P(different) = 1 − '+sum.toFixed(4)+' = '+(1-sum).toFixed(4)+' ≈ 0.72 🎉</div>',100);}
+
+// ---- prompt switch (conditional)
+const PR=[{name:'A sleepy robot dreams about',p:P,real:true},{name:'A hungry robot dreams about',p:[0.10,0.55,0.05,0.05,0.25],real:false}];
+function setPrompt(k){document.querySelectorAll('.pbtn').forEach((b,i)=>b.classList.toggle('on',i===k));const q=PR[k].p,s2=q.reduce((a,b)=>a+b*b,0);
+ $('#pTitle').innerHTML='<b>P( ending | prompt = "'+PR[k].name+'" )</b>'+(PR[k].real?' ← our table':' ← invented numbers');olist($('#pList'),q,-1);
+ $('#pTxt').innerHTML='Same endings, <b>different chances</b>!<br>"…dreams about electric sheep": <b>'+q[0].toFixed(2)+'</b><br>P(two calls differ) = 1 − Σ pᵢ² = <b>'+(1-s2).toFixed(3)+'</b>';}
+
+function longWay(){const el=$('#lwTxt');el.innerHTML='';$('#lwSum').innerHTML='';let s=0,k=0;for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(i!==j){const v=P[i]*P[j];const kk=k++;setTimeout(()=>{s+=v;el.innerHTML+=(kk+1)+'. "'+OUT[i]+'" AND "'+OUT[j]+'": '+P[i]+' × '+P[j]+' = '+v.toFixed(4)+'<br>';el.scrollTop=1e4;$('#lwSum').textContent='Σ = '+s.toFixed(4);if(kk===19)$('#lwSum').innerHTML='Σ = '+s.toFixed(4)+' ✔<div class="small">Complement: 1 − 0.2782 = 0.7218. The same answer! But 20 steps instead of 5.</div>';},130*kk);}}
+function indCheck(mem){let n1=0,n2=0,both=0;const N=1000;for(let k=0;k<N;k++){const a=pick(P);const b=(mem&&Math.random()<0.5)?a:pick(P);if(a===0){n1++;if(b===0)n2++;}if(a===0&&b===0)both++;}
+ const c=n1?n2/n1:0;
+ $('#icTxt').innerHTML=(mem?'🧠 <b>Model with memory</b> (half of the time it just repeats call 1):':'🤖 <b>Normal model</b> (every call is fresh, it only sees the prompt):')+
+ '<br>• Call 1 said "…dreams about electric sheep" in <b>'+n1+'</b> pairs. In those pairs, call 2 also said it: <b>'+(c*100).toFixed(1)+'%</b>'+
+ '<br>• → P(call 2 = sheep | prompt, call 1 = sheep) ≈ <b>'+c.toFixed(2)+'</b>'+
+ '<br>• Both "electric sheep": <b>'+(both/N).toFixed(3)+'</b> &nbsp;vs.&nbsp; 0.44 × 0.44 = 0.194'+
+ (mem?'<br>❌ This is about 0.72, not 0.44. Call 1 <b>changes</b> call 2 → NOT independent → 0.44 × 0.44 is wrong here! (Chain rule: 0.44 × 0.72 ≈ 0.317)':'<br>✅ This is about 0.44, the same as P(sheep | prompt). Call 1 doesn\'t change call 2 → <b>independent</b> → 0.44 × 0.44 works!');}
+function mixDraw(){const t=+$('#mix').value,q=P.map(p=>(1-t)*p+t*0.2),s2=q.reduce((a,b)=>a+b*b,0);olist($('#mixList'),q,-1);$('#mixTxt').innerHTML='P(different) = 1 − Σ pᵢ² = <b>'+(1-s2).toFixed(3)+'</b>'+(t===1?'<br>Equal chances: 1 − 1/5 = 0.8, the maximum!':'');}
+function tempDraw(){const T=+$('#tT').value,w=P.map(p=>Math.pow(p,1/T)),z=w.reduce((a,b)=>a+b,0),q=w.map(x=>x/z),s2=q.reduce((a,b)=>a+b*b,0);$('#tTv').textContent=T.toFixed(1);olist($('#tList'),q,-1);
+ $('#tTxt').innerHTML='P(two calls differ) = <b>'+(1-s2).toFixed(3)+'</b><br>'+(T<0.6?'❄️ Low T: almost always "…dreams about electric sheep"':T>1.6?'🔥 High T: close to equal chances':'Normal T');}
+function pupDraw(){const n=+$('#pn').value;$('#pnv').textContent=n;$('#pupv').textContent=(1-Math.pow(0.91,n)).toFixed(3);
+ const W=340,H=120,bw=(W-30)/40,Y=v=>H-18-v*(H-30);let s='<line x1="24" y1="'+Y(0)+'" x2="'+W+'" y2="'+Y(0)+'" stroke="#999"/><text x="20" y="'+(Y(1)+4)+'" font-size="10" text-anchor="end">1</text><text x="20" y="'+(Y(.5)+4)+'" font-size="10" text-anchor="end">0.5</text><line x1="24" y1="'+Y(.5)+'" x2="'+W+'" y2="'+Y(.5)+'" stroke="#ccd" stroke-dasharray="3"/>';
+ for(let k=1;k<=40;k++){const v=1-Math.pow(0.91,k);s+='<rect x="'+(26+(k-1)*bw)+'" y="'+Y(v)+'" width="'+(bw-1.5)+'" height="'+(Y(0)-Y(v))+'" fill="'+(k===n?'#f39c12':k<n?'#4a8ad6':'#c9d8ea')+'" rx="1.5"/>';if(k%10===0||k===1)s+='<text x="'+(26+(k-.5)*bw)+'" y="'+(H-5)+'" font-size="10" text-anchor="middle">'+k+'</text>';}
+ $('#pupSvg').innerHTML=s+'<text x="'+(W-2)+'" y="'+(Y(1)+4)+'" font-size="10" text-anchor="end" fill="#667">P(at least one 🐶 in n calls)</text>';}
+let PUP=0;const PUPN=[];
+function pupRun(){const id=++PUP,el=$('#pupChips');el.innerHTML='';$('#pupTxt').innerHTML='';let k=0;
+ const tick=()=>{if(id!==PUP)return;const i=pick(P);k++;el.insertAdjacentHTML('beforeend','<span class="'+(i===4?'hit':'')+'" title="'+OUT[i]+'">'+EM[i]+'</span>');
+  if(i===4||k>=60){PUPN.push(k);const avg=PUPN.reduce((a,b)=>a+b,0)/PUPN.length;$('#pupTxt').innerHTML=(i===4?'🐶 "…dreams about robot puppies" after <b>'+k+'</b> calls!':'Still no 🐶 after 60 calls…')+'<br>Runs so far: '+PUPN.length+' · average: <b>'+avg.toFixed(1)+'</b> calls (the maths says 1 / 0.09 ≈ 11)';return;}
+  setTimeout(tick,140);};tick();}
+
+// ---- why can we add: stack the 5 same cells
+let STK=0;const SC=['#e67e22','#f39c12','#f5b041','#f8c471','#fad7a0'];
+function addStack(){const id=++STK,bar=$('#stk');bar.innerHTML='';let sum=0,txt=[];
+ const segs=P.map((p,i)=>{const d=document.createElement('div');d.className='sseg';d.style.background=SC[i];d.textContent=EM[i];d.title='both '+OUT[i]+': '+(p*p).toFixed(4);bar.appendChild(d);return d;});
+ $('#stkTxt').innerHTML='The 5 orange cells, one after another:';
+ P.forEach((p,i)=>setTimeout(()=>{if(id!==STK)return;sum+=p*p;segs[i].style.width=(p*p*100)+'%';txt.push((p*p).toFixed(4));
+  $('#stkTxt').innerHTML='P(same) = '+txt.join(' + ')+' = <b>'+sum.toFixed(4)+'</b>'+(i===4?'<br>No overlap, so nothing is counted twice ✔<br>The blue part that is left = "different" = 1 − '+sum.toFixed(4)+' = <b>'+(1-sum).toFixed(4)+'</b>':'');},400+i*600));}
+function addClash(){++STK;$('#stk').innerHTML='';$('#stkTxt').innerHTML='<div class="slot">Call 1 says: <b>🐑</b></div><br><span class="small">For "both sheep", call 1 must say 🐑…</span>';
+ setTimeout(()=>{$('#stkTxt').innerHTML='<div class="slot">Call 1 says: <b>🐑</b><b class="x">🐶</b> ❌</div><br>…and for "both puppies" it must <b>also</b> say 🐶. Impossible! One call gives only <b>one</b> ending.<br>→ the 5 cases never happen together → <b>mutually exclusive</b> → we can <b>add</b> ✔';},1300);}
+
+
+setEv('even');axDraw();vennDraw();faces($('#meF'),{});faces($('#nmeF'),{});g6('both6');grid($('#g6b'),()=>false,'');compDraw();robReset();stepDraw();mosaic();setPrompt(0);mixDraw();tempDraw();pupDraw();
+$('#p3').textContent=P.reduce((a,b)=>a+b*b*b,0).toFixed(4);showChapter('prob');
+</script>
 <script src="../assets/sidebar.js"></script>
-</body>
-</html>
+</body></html>
